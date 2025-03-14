@@ -2,22 +2,23 @@ name: "✨ Feature Request"
 description: "Suggest a new feature or improvement"
 title: "[Feature] - "
 labels: ["Feature", "To Do"]
+type: "Feature"
 body:
-  - type: input
+  - type: textarea
     id: description
     attributes:
       label: "Description"
       description: "Briefly describe the feature or improvement."
       placeholder: "E.g., Add a dark mode to the application."
 
-  - type: input
+  - type: textarea
     id: motivation
     attributes:
       label: "Motivation"
       description: "Why is this feature needed?"
       placeholder: "E.g., Dark mode improves usability in low light environments."
 
-  - type: input
+  - type: textarea
     id: proposed-solution
     attributes:
       label: "Proposed Solution"
@@ -33,7 +34,7 @@ body:
         - label: "Meets proposed solution"
         - label: "Tests considered"
 
-  - type: input
+  - type: textarea
     id: additional-info
     attributes:
       label: "Additional Info"
