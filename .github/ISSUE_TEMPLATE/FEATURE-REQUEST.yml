@@ -3,29 +3,26 @@ description: "Suggest a new feature or improvement"
 title: "[Feature] - "
 labels: ["Feature", "To Do"]
 body:
-  - type: textarea
+  - type: input
     id: description
     attributes:
       label: "Description"
       description: "Briefly describe the feature or improvement."
       placeholder: "E.g., Add a dark mode to the application."
-      value: ""
 
-  - type: textarea
+  - type: input
     id: motivation
     attributes:
       label: "Motivation"
       description: "Why is this feature needed?"
       placeholder: "E.g., Dark mode improves usability in low light environments."
-      value: ""
 
-  - type: textarea
+  - type: input
     id: proposed-solution
     attributes:
       label: "Proposed Solution"
       description: "How do you suggest implementing this feature?"
       placeholder: "E.g., Add a toggle option in the settings menu."
-      value: ""
 
   - type: checkboxes
     id: acceptance-criteria
@@ -36,9 +33,8 @@ body:
         - label: "Meets proposed solution"
         - label: "Tests considered"
 
-  - type: textarea
+  - type: input
     id: additional-info
     attributes:
       label: "Additional Info"
       placeholder: "Optional: Any extra context or references."
-      value: ""
