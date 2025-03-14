@@ -5,9 +5,9 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:krita="http://krita.org/namespaces/svg/krita"
     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-    width="61.44pt"
-    height="61.44pt"
-    viewBox="0 0 61.44 61.44">
+    width="61.5938pt"
+    height="61.5938pt"
+    viewBox="0 0 61.5938 61.5938">
 <defs/>
-<rect id="shape0" transform="translate(9.16000000000001, 2.33999999999999)" fill="#ffffff" fill-rule="evenodd" stroke="#ffffff" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="bevel" width="41.1018795460332" height="56.76"/><rect id="shape1" transform="translate(6.9133524355301, 2.33999999999999)" fill="#985a1d" fill-rule="evenodd" stroke="#683300" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="bevel" width="39.8743839541547" height="53.8466475644699"/><path id="shape2" transform="translate(42, 38.88)" fill="none" stroke="#2c2c2c" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="2" stroke-dasharray="19.2,9.6,4.8,9.6,4.8,9.6" d="M0 0L19.08 17.88" sodipodi:nodetypes="cc"/><ellipse id="shape3" transform="translate(20.3439541547278, 16.7360458452722)" rx="12.36" ry="12.72" cx="12.36" cy="12.72" fill="none" stroke="#404040" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="bevel"/>
+<rect id="shape0" transform="matrix(1 0 0 1.01777982956906 11.7114256880167 2.11921898761363)" fill="#ffffff" fill-rule="evenodd" stroke="#ffffff" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="bevel" width="40.9410788389851" height="56.3533589077487"/><rect id="shape1" transform="matrix(1 0 0 1.01777982956906 9.28639929268629 2.13710964747148)" fill="#985a1d" fill-rule="evenodd" stroke="#683300" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="bevel" width="39.8743839541547" height="53.8466475644699"/><path id="shape2" transform="matrix(1 0 0 1.01777982956906 44.3906249809685 39.3088939600672)" fill="none" stroke="#2c2c2c" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="2" stroke-dasharray="19.2,9.6,4.8,9.6,4.8,9.6" d="M0 0L19.08 17.88" sodipodi:nodetypes="cc"/><ellipse id="shape3" transform="matrix(1 0 0 1.01777982956906 22.7345791356963 16.7712240744832)" rx="12.36" ry="12.72" cx="12.36" cy="12.72" fill="none" stroke="#404040" stroke-width="4.8" stroke-linecap="square" stroke-linejoin="bevel"/>
 </svg>
