@@ -1,0 +1,40 @@
+name: "✨ Feature Request"
+description: "Suggest a new feature or improvement"
+title: "[Feature] - "
+labels: ["Feature", "To Do"]
+body:
+  - type: input
+    id: description
+    attributes:
+      label: "Description"
+      description: "Briefly describe the feature or improvement."
+      placeholder: "E.g., Add a dark mode to the application."
+
+  - type: input
+    id: motivation
+    attributes:
+      label: "Motivation"
+      description: "Why is this feature needed?"
+      placeholder: "E.g., Dark mode improves usability in low light environments."
+
+  - type: input
+    id: proposed-solution
+    attributes:
+      label: "Proposed Solution"
+      description: "How do you suggest implementing this feature?"
+      placeholder: "E.g., Add a toggle option in the settings menu."
+
+  - type: checkboxes
+    id: acceptance-criteria
+    attributes:
+      label: "Acceptance Criteria"
+      options:
+        - label: "Feature is clearly defined"
+        - label: "Meets proposed solution"
+        - label: "Tests considered"
+
+  - type: input
+    id: additional-info
+    attributes:
+      label: "Additional Info"
+      placeholder: "Optional: Any extra context or references."

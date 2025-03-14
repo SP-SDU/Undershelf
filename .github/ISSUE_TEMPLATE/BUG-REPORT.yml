@@ -1,0 +1,47 @@
+name: "🐞 Bug Report"
+description: "Report an issue or bug"
+title: "[Bug] - "
+labels: ["Bug", "To Do"]
+body:
+  - type: input
+    id: description
+    attributes:
+      label: "Description"
+      description: "Briefly describe the bug."
+      placeholder: "E.g., The application crashes when clicking on the save button."
+
+  - type: input
+    id: steps-to-reproduce
+    attributes:
+      label: "Steps to Reproduce"
+      description: "List the steps to replicate the issue."
+      placeholder: "1. Step one\n2. Step two"
+
+  - type: input
+    id: expected-behavior
+    attributes:
+      label: "Expected Behavior"
+      description: "Describe what you expected to happen."
+      placeholder: "E.g., The application should save the data without crashing."
+
+  - type: input
+    id: actual-behavior
+    attributes:
+      label: "Actual Behavior"
+      description: "Describe what actually happens."
+      placeholder: "E.g., The application crashes with an error message."
+
+  - type: checkboxes
+    id: acceptance-criteria
+    attributes:
+      label: "Acceptance Criteria"
+      options:
+        - label: "Issue is reproducible"
+        - label: "Fix meets requirements"
+        - label: "Tests pass"
+
+  - type: input
+    id: additional-info
+    attributes:
+      label: "Additional Info"
+      placeholder: "Optional: Any extra context or screenshots."
