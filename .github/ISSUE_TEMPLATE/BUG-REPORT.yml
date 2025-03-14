@@ -2,29 +2,30 @@ name: "🐞 Bug Report"
 description: "Report an issue or bug"
 title: "[Bug] - "
 labels: ["Bug", "To Do"]
+type: "Bug"
 body:
-  - type: input
+  - type: textarea
     id: description
     attributes:
       label: "Description"
       description: "Briefly describe the bug."
       placeholder: "E.g., The application crashes when clicking on the save button."
 
-  - type: input
+  - type: textarea
     id: steps-to-reproduce
     attributes:
       label: "Steps to Reproduce"
       description: "List the steps to replicate the issue."
       placeholder: "1. Step one\n2. Step two"
 
-  - type: input
+  - type: textarea
     id: expected-behavior
     attributes:
       label: "Expected Behavior"
       description: "Describe what you expected to happen."
       placeholder: "E.g., The application should save the data without crashing."
 
-  - type: input
+  - type: textarea
     id: actual-behavior
     attributes:
       label: "Actual Behavior"
@@ -40,7 +41,7 @@ body:
         - label: "Fix meets requirements"
         - label: "Tests pass"
 
-  - type: input
+  - type: textarea
     id: additional-info
     attributes:
       label: "Additional Info"
