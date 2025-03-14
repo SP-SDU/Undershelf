@@ -3,6 +3,7 @@ description: "Report an issue or bug"
 title: "[Bug] - "
 labels: ["Bug", "To Do"]
 type: "Bug"
+projects: "github/8"
 body:
   - type: textarea
     id: description
