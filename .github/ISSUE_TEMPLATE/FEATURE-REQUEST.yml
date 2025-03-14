@@ -3,6 +3,7 @@ description: "Suggest a new feature or improvement"
 title: "[Feature] - "
 labels: ["Feature", "To Do"]
 type: "Feature"
+projects: "github/8"
 body:
   - type: textarea
     id: description
