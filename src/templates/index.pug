@@ -1,0 +1,54 @@
+extends layout.pug
+
+block content
+  main.max-w-7xl.mx-auto.px-6.py-12
+    .grid.grid-cols-1.gap-12(class='lg:grid-cols-2')
+      div
+        h1.text-5xl.font-bold.text-gray-900.mb-4 Your Personal Library, Reimagined
+        p.text-xl.text-gray-600.mb-8 Discover, track, and enjoy your reading journey
+        .space-x-4
+          a.bg-blue-600.text-white.px-6.py-2.rounded-md(href='/sign-up') Sign Up
+          a.border.border-blue-600.text-blue-600.px-6.py-2.rounded-md(href='/login') Login
+      .relative
+        .absolute.top-0.right-0.bg-white.p-6.rounded-lg.shadow-lg
+          .flex.items-center.space-x-3
+            svg.w-8.h-8.text-blue-600(fill='currentColor' viewbox='0 0 20 20')
+              path(d='M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z')
+            div
+              h3.font-semibold Digital Library
+              p.text-sm.text-gray-600 Access your books anywhere
+
+    .grid.grid-cols-1.gap-8.mt-24(class='md:grid-cols-3')
+      .p-6.bg-white.rounded-lg.shadow
+        .text-blue-600.mb-4
+          svg.w-8.h-8(fill='currentColor' viewbox='0 0 20 20')
+            path(d='M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z')
+        h3.text-xl.font-semibold.mb-2 Lightning-Fast Search
+        p.text-gray-600 Find any book instantly with our powerful search engine
+      .p-6.bg-white.rounded-lg.shadow
+        .text-blue-600.mb-4
+          svg.w-8.h-8(fill='currentColor' viewbox='0 0 20 20')
+            path(d='M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z')
+        h3.text-xl.font-semibold.mb-2 Personalized For You
+        p.text-gray-600 Get recommendations based on your reading preferences
+      .p-6.bg-white.rounded-lg.shadow
+        .text-blue-600.mb-4
+          svg.w-8.h-8(fill='currentColor' viewbox='0 0 20 20')
+            path(d='M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z')
+        h3.text-xl.font-semibold.mb-2 Read Anywhere
+        p.text-gray-600 Access your library on any device, anytime
+
+    .text-center.mt-24
+      h2.text-3xl.font-bold.mb-4 Join Our Growing Community
+      p.text-gray-600.mb-12 Over 100,000 readers trust BookHub for their literary journey
+      .grid.grid-cols-3.gap-8.max-w-2xl.mx-auto
+        div
+          .text-3xl.font-bold.text-blue-600 100k+
+          .text-gray-600 Active Readers
+        div
+          .text-3xl.font-bold.text-blue-600 1M+
+          .text-gray-600 Books Available
+        div
+          .text-3xl.font-bold.text-blue-600 4.8
+          .text-gray-600 User Rating
+      p.text-gray-600.mt-8 Start your free 30-day trial. No credit card required.

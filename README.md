@@ -16,7 +16,47 @@
 
 ## Getting Started 🚀
 
-N/A
+### Prerequisites
+- Python 3.12 or higher
+- pip (Python package manager)
+
+### Installation (Or run task Install dependencies in VSCode)
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/SP-SDU/BookSearch.git
+   cd BookSearch
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   # Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+
+   # Linux/MacOS
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install dependencies:
+   ```
+   pip install -r src/requirements.txt
+   ```
+
+### Running the Application (Or debug F5 in VSCode)
+
+1. Ensure virtual environment is activated (you should see `(venv)` in your terminal)
+
+2. Start the Flask server:
+   ```
+   python src/app.py
+   ```
+
+3. Open your browser and navigate to:
+   ```
+   http://localhost:5000
+   ```
 
 ## Contributing 🤝
 
