@@ -2,6 +2,17 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Create Virtual Environment",
+            "type": "shell",
+            "command": "${command:python.interpreterPath} -m venv venv",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "Install Dependencies",
             "type": "shell",
             "command": "${command:python.interpreterPath}",
@@ -17,7 +28,10 @@
                 "reveal": "always",
                 "panel": "new"
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "dependsOn": [
+                "Create Virtual Environment"
+            ]
         }
     ]
 }
