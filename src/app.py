@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, template_folder='presentation/templates')
 app.jinja_env.add_extension('pypugjs.ext.jinja.PyPugJSExtension')
 
 
