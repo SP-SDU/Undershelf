@@ -3,12 +3,13 @@ import pandas as pd
 
 # Content based recommender proof of concept 2
 
-merged_fp = 'Task2/merged_dataframe.csv' #TODO change file path
+merged_fp = 'merged_dataframe.csv' #TODO change file path
 merged_df= pd.read_csv(merged_fp, index_col="User_id")
 merged_df=merged_df.dropna()
 
-inputUsrVctr = merged_df.loc[["A3UH4UZ4RSVO82"],["review/score"]].to_numpy() 
-userGnrMtrx = merged_df.loc[["A3UH4UZ4RSVO82"],["categories"]]
+userid = "A2MVUWT453QH61"
+inputUsrVctr = merged_df.loc[[userid],["review/score"]].to_numpy() 
+userGnrMtrx = merged_df.loc[[userid],["categories"]]
 
 def encode_and_bind(original_dataframe, feature_to_encode):
     dummies = pd.get_dummies(original_dataframe[[feature_to_encode]])
@@ -25,7 +26,7 @@ interestGnrVctr = interestGnrVctr/np.linalg.norm(interestGnrVctr)
 
 print("User Genre Matrix",userGnrMtrx,"Weighted Genre Matrix",weightedGnrMtrx,"Interest Genre Vector",interestGnrVctr, sep="\n")
 
-
+print(merged_df.loc[[userid],["categories","review/score"]])
 
 
 #
