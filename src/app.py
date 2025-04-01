@@ -1,6 +1,7 @@
 #!venv/bin/python
 import os
 import uuid
+import json
 from flask import Flask, url_for, redirect, render_template, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore, \
@@ -11,6 +12,8 @@ from flask_admin.contrib import sqla
 from flask_admin import helpers as admin_helpers
 from flask_admin import BaseView, expose
 from wtforms import PasswordField
+from business.book_sorter import BookSorter
+import threading
 
 # Create Flask application
 app = Flask(__name__, 
@@ -19,9 +22,9 @@ app = Flask(__name__,
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
-# Initialize the database
-with app.app_context():
-    db.create_all()
+# Add seeding status flag
+is_seeding = False
+has_checked_db = False
 
 # Define models
 roles_users = db.Table(
@@ -48,7 +51,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
-    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)  # Add this line
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
@@ -56,10 +59,30 @@ class User(db.Model, UserMixin):
         return self.email
 
 
+# Add Book model
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(db.JSON, nullable=False)
+
+    @property
+    def book_id(self):
+        """Get the book's ID from the JSON data"""
+        return self.data.get('Id')
+
+    @staticmethod
+    def from_json(json_data):
+        """Create a Book instance from JSON data"""
+        if not json_data.get('Id'):
+            raise ValueError("Book data must contain an 'Id' field")
+        return Book(data=json_data)
+
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
+# Initialize the database after all models are defined
+with app.app_context():
+    db.create_all()
 
 # Create customized model view class
 class MyModelView(sqla.ModelView):
@@ -115,6 +138,55 @@ class CustomView(BaseView):
 def index():
     return render_template('index.html')
 
+@app.route('/search')
+def search():
+    global has_checked_db
+    # Check if we need to initialize database
+    if not has_checked_db:
+        with app.app_context():
+            try:
+                count = db.session.query(Book).count()
+                if count == 0:
+                    background_seed()
+            except Exception as e:
+                print(f"Error checking database: {e}")
+                background_seed()
+            has_checked_db = True
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 50  # Number of books per page
+    sort = request.args.get('sort', 'title')
+    order = request.args.get('order', 'asc')
+    
+    # Get paginated books
+    pagination = Book.query.paginate(page=page, per_page=per_page, error_out=False)
+    books_data = [{'id': book.id, 'data': book.data} for book in pagination.items]
+    
+    # Sort current page if sort parameter is provided
+    if sort:
+        sorted_data = BookSorter.sort_books(
+            [book['data'] for book in books_data], 
+            sort, 
+            ascending=(order == 'asc')
+        )
+        # Reattach IDs to sorted data
+        books = [{'id': books_data[i]['id'], 'data': book} for i, book in enumerate(sorted_data)]
+    else:
+        books = books_data
+
+    return render_template(
+        'search.html',
+        books=books,
+        pagination=pagination,
+        current_sort=sort,
+        is_seeding=is_seeding
+    )
+
+@app.route('/book/<int:book_id>')
+def book_details(book_id):
+    book = Book.query.get_or_404(book_id)
+    return render_template('book_details.html', book=book)
+
 # Create admin
 admin = flask_admin.Admin(
     app,
@@ -127,6 +199,7 @@ admin = flask_admin.Admin(
 admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
 admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
 admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop',))
+admin.add_view(MyModelView(Book, db.session, menu_icon_type='fa', menu_icon_value='fa-book', name="Books"))
 
 # define a context processor for merging flask-admin's template context into the
 # flask-security views.
@@ -138,6 +211,52 @@ def security_context_processor():
         h=admin_helpers,
         get_url=url_for
     )
+
+def seed_books():
+    """
+    Seed the database with books from merged_dataframe.json
+    """
+    global is_seeding
+    is_seeding = True
+    print("Starting database seeding...")
+    
+    json_path = os.path.join(os.path.dirname(__file__), 'data', 'merged_dataframe.json')
+    if os.path.exists(json_path):
+        print(f"Found data file at {json_path}")
+        with open(json_path, 'r', encoding='utf-8') as file:
+            books_data = json.load(file)
+            # Process books in batches
+            batch_size = 1000
+            processed = 0
+            seen_ids = set()  # Track processed IDs in memory
+            
+            for i in range(0, len(books_data), batch_size):
+                batch = books_data[i:i + batch_size]
+                with app.app_context():
+                    for book_data in batch:
+                        try:
+                            book_id = str(book_data['Id'])
+                            if book_id not in seen_ids:
+                                book = Book.from_json(book_data)
+                                db.session.add(book)
+                                seen_ids.add(book_id)
+                                processed += 1
+                        except Exception as e:
+                            print(f"Error processing book: {e}")
+                    db.session.commit()
+                print(f"Processed batch: {processed} books added")
+    else:
+        print(f"Warning: Could not find {json_path}")
+    
+    is_seeding = False
+    print("Database seeding completed")
+
+def background_seed():
+    """Start seeding in a background thread"""
+    print("Initializing background seeding...")
+    thread = threading.Thread(target=seed_books)
+    thread.daemon = True
+    thread.start()
 
 def build_sample_db():
     """
@@ -161,7 +280,7 @@ def build_sample_db():
             first_name='Admin',
             email='admin',
             password=hash_password('admin'),
-            fs_uniquifier=str(uuid.uuid4()),  # Add this line
+            fs_uniquifier=str(uuid.uuid4()),
             roles=[user_role, super_user_role]
         )
 
@@ -184,19 +303,21 @@ def build_sample_db():
                 last_name=last_names[i],
                 email=tmp_email,
                 password=hash_password(tmp_pass),
-                fs_uniquifier=str(uuid.uuid4()),  # Add this line
+                fs_uniquifier=str(uuid.uuid4()),
                 roles=[user_role, ]
             )
         db.session.commit()
+        # Seed books after creating users
+        seed_books()
     return
 
 if __name__ == '__main__':
-
-    # Build a sample db on the fly, if one does not exist yet.
-    app_dir = os.path.realpath(os.path.dirname(__file__))
-    database_path = os.path.join(app_dir, app.config['DATABASE_FILE'])
-    if not os.path.exists(database_path):
-        build_sample_db()
-
+    # Initialize database tables
+    with app.app_context():
+        db.create_all()
+        # Check if we need to start seeding
+        if Book.query.count() == 0:
+            background_seed()
+    
     # Start app
     app.run(debug=True)

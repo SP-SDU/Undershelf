@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.data.Title }} - BookSearch{% endblock %}
+
+{% block content %}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Book Details</h3>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-4">
+                {% if book.data.image %}
+                <img src="{{ book.data.image }}" class="img-responsive" alt="{{ book.data.Title }}">
+                {% else %}
+                <div class="well text-center" style="height: 400px; display: flex; align-items: center; justify-content: center;">
+                    <span class="text-muted">No Image Available</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <h2>{{ book.data.Title }}</h2>
+                <p><strong>Author(s):</strong> 
+                    {% if book.data.authors %}
+                        {{ book.data.authors|replace("['", "")|replace("']", "")|replace("'", "") }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </p>
+                <p><strong>Rating:</strong> {{ book.data['review/score']|default('N/A') }}</p>
+                <p><strong>Reviews:</strong> {{ book.data.ratingsCount|default('0') }}</p>
+                <p><strong>Published:</strong> {{ book.data.publishedDate|default('N/A') }}</p>
+                
+                {% if book.data.publisher %}
+                <p><strong>Publisher:</strong> {{ book.data.publisher }}</p>
+                {% endif %}
+                
+                {% if book.data.categories %}
+                <p><strong>Categories:</strong> {{ book.data.categories|replace("['", "")|replace("']", "")|replace("'", "") }}</p>
+                {% endif %}
+                
+                {% if book.data.description %}
+                <div class="well">
+                    <h4>Description</h4>
+                    <p>{{ book.data.description }}</p>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('search') }}" class="btn btn-default">
+                    <i class="fa fa-arrow-left"></i> Back to Search
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %} - BookSearch</title>
+    
+    {% block head_meta %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% endblock head_meta %}
+
+    {% block head_css %}
+    <!-- Bootstrap 3.3.6 -->
+    <link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Theme style -->
+    <link href="{{url_for('static',filename='css/AdminLTE.min.css')}}" rel="stylesheet">
+    <!-- AdminLTE Skins -->
+    <link href="{{url_for('static',filename='css/skins/_all-skins.min.css')}}" rel="stylesheet">
+    {% endblock head_css %}
+</head>
+<body class="hold-transition skin-blue layout-top-nav">
+    <div class="wrapper">
+        <header class="main-header">
+            <nav class="navbar navbar-static-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <a href="/" class="navbar-brand">BookSearch</a>
+                    </div>
+                    <div class="navbar-custom-menu">
+                        <ul class="nav navbar-nav">
+                            <li><a href="{{ url_for('search') }}">Search</a></li>
+                            {% if current_user.is_authenticated %}
+                                <li><a href="{{ url_for('admin.index') }}">Admin</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="container">
+                <section class="content">
+                    {% block content %}{% endblock %}
+                </section>
+            </div>
+        </div>
+    </div>
+
+    {% block tail_js %}
+    <!-- jQuery 2.2.3 -->
+    <script src="{{url_for('static',filename='plugins/jQuery/jquery-2.2.3.min.js')}}"></script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{url_for('static',filename='js/app.min.js')}}"></script>
+    {% endblock tail_js %}
+</body>
+</html>

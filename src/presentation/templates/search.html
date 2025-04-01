@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Books{% endblock %}
+
+{% block content %}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Books</h3>
+    </div>
+    <div class="box-body">
+        {% if is_seeding %}
+        <div class="alert alert-info">
+            <i class="fa fa-spinner fa-spin"></i> Loading books into database... You can still browse available books.
+        </div>
+        {% endif %}
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{ book.data.Title }}</td>
+                        <td>
+                            {% if book.data.authors %}
+                                {{ book.data.authors|replace("['", "")|replace("']", "")|replace("'", "") }}
+                            {% else %}
+                                Unknown
+                            {% endif %}
+                        </td>
+                        <td>{{ book.data.publishedDate }}</td>
+                        <td>
+                            <a href="{{ url_for('book_details', book_id=book.id) }}" class="btn btn-info btn-xs">
+                                <i class="fa fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if pagination.pages > 1 %}
+        <div class="text-center">
+            <ul class="pagination">
+                {% if pagination.has_prev %}
+                <li>
+                    <a href="{{ url_for('search', page=pagination.prev_num, sort=current_sort) }}">&laquo;</a>
+                </li>
+                {% endif %}
+
+                {%- for page in pagination.iter_pages() %}
+                    {% if page %}
+                        <li {% if page == pagination.page %}class="active"{% endif %}>
+                            <a href="{{ url_for('search', page=page, sort=current_sort) }}">{{ page }}</a>
+                        </li>
+                    {% else %}
+                        <li class="disabled"><span>…</span></li>
+                    {% endif %}
+                {%- endfor %}
+
+                {% if pagination.has_next %}
+                <li>
+                    <a href="{{ url_for('search', page=pagination.next_num, sort=current_sort) }}">&raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

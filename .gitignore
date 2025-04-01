@@ -591,3 +591,6 @@ cython_debug/
 
 # Ignore macOS system files
 .DS_Store
+
+# Too large files
+merged_dataframe.json

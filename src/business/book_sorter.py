@@ -6,6 +6,7 @@ class BookSorter:
     SORT_CRITERIA = {
         'rating': 'review/score',
         'title': 'Title',
+        'author': 'Author',
         'date': 'publishedDate',
         'ratings_count': 'ratingsCount'
     }
@@ -31,6 +32,17 @@ class BookSorter:
         # Extract and convert the sort key values based on criteria
         if criteria in ['rating', 'ratings_count']:
             key_values = np.array([float(book.get(field, '0') or '0') for book in books])
+        elif criteria == 'author':
+            # Clean up author string and get first author for sorting
+            key_values = np.array([
+                str(book.get(field, ''))
+                .replace("['", "")
+                .replace("']", "")
+                .replace("'", "")
+                .split(',')[0]
+                .lower() 
+                for book in books
+            ])
         elif criteria == 'date':
             key_values = np.array([int(book.get(field, '0')[:4] or '0') for book in books])
         else:
