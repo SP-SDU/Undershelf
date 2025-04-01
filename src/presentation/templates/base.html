@@ -30,7 +30,7 @@
                     </div>
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
-                            <li><a href="{{ url_for('search') }}">Search</a></li>
+                            <li><a href="{{ url_for('views.search') }}">Search</a></li>
                             {% if current_user.is_authenticated %}
                                 <li><a href="{{ url_for('admin.index') }}">Admin</a></li>
                             {% endif %}
