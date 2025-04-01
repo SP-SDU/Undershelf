@@ -3,11 +3,21 @@ import pandas as pd
 
 # Content based recommender proof of concept 2
 
-merged_fp = 'merged_dataframe.csv' #TODO change file path
+merged_fp = 'merged_dataframe.csv' 
 merged_df= pd.read_csv(merged_fp, index_col="User_id")
 merged_df=merged_df.dropna()
 
-userid = "A2MVUWT453QH61"
+rng = np.random.default_rng(None)
+indexRandom = rng.integers(low=0, high=len(merged_df.index), size=1)
+indexRandom = indexRandom[0]
+
+userid = merged_df.iloc[indexRandom]
+userid = userid.name
+
+
+
+print("User: ",userid)
+
 inputUsrVctr = merged_df.loc[[userid],["review/score"]].to_numpy() 
 userGnrMtrx = merged_df.loc[[userid],["categories"]]
 
@@ -18,34 +28,49 @@ def encode_and_bind(original_dataframe, feature_to_encode):
     return(res) 
 
 userGnrMtrx = encode_and_bind(userGnrMtrx, 'categories')
+test1 = userGnrMtrx
 userGnrMtrx = userGnrMtrx.to_numpy(dtype=int)
 
 weightedGnrMtrx = np.multiply(inputUsrVctr,userGnrMtrx)  
 interestGnrVctr = weightedGnrMtrx.sum(axis=0)  
 interestGnrVctr = interestGnrVctr/np.linalg.norm(interestGnrVctr)
 
-print("User Genre Matrix",userGnrMtrx,"Weighted Genre Matrix",weightedGnrMtrx,"Interest Genre Vector",interestGnrVctr, sep="\n")
+titleindex_df = merged_df.set_index('Title')
+userCtg = merged_df.loc[[userid],["categories"]]
+booklistMatch = titleindex_df['categories'].isin(userCtg.loc[:,'categories'])
+booklistMatch = titleindex_df[booklistMatch]
+candidateMtrx = booklistMatch
 
-print(merged_df.loc[[userid],["categories","review/score"]])
+candidateMtrx = encode_and_bind(candidateMtrx, "categories")
+candidateMtrx = candidateMtrx.drop(['Id', 'review/score', 'description', 'authors', 'image', 'publisher', 'publishedDate', 'ratingsCount'], axis=1)
+
+candidatetest = candidateMtrx
+
+candidateMtrx = candidateMtrx.to_numpy(dtype=int)
+weightedCnddtGnrMtrx = np.multiply(interestGnrVctr,candidateMtrx)           
+weightedAvrg = weightedCnddtGnrMtrx.sum(axis=1) 
 
 
-#
-#candidateMvMtrx = np.array([[1,0,0],[0,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,0],[1,1,1]])   # height = number of candidate books, lenght = max user genre
-#
-## select 7 books where not in reviews from user but same genre and ratingcount 
-#
-#
-#weightedCnddtGnrMtrx = np.multiply(interestGnrVctr,candidateMvMtrx)                     # multiplication of the interest vector and the candidate matrix
-#weightedAvrg = weightedCnddtGnrMtrx.sum(axis=1)                                         # aggregation of the candidate result 
-#sortedAvrg = np.sort( weightedAvrg, kind='mergesort')[::-1]                             # sort the average in a inverse order
-#
-#
-#
-#
-## Issues
-## The genres and books needs to be indentified at any moment somehow, in this prove of concept is easy until the sort execution
-## This method is not optimized for SIMD
-## This method doesnt have multiple user in mind
+dimensions = candidateMtrx.shape
+rows, columns = dimensions
+
+
+print("User Categories: ", userCtg["categories"].unique(), sep="\n")
+
+print("Candidate Rows:", rows)
+print("Candidate Columns:", columns)
+
+dimensions = userGnrMtrx.shape
+rows, columns = dimensions
+
+print("UserGnr Rows: ", rows)
+print("UserGnr Columns: ", columns)
+print("RESULT :",weightedAvrg, sep="\n")
+print("Candidate Genre log: ",list(candidatetest), sep="\n")
+
+# TODO Test proof. Identify error when max genre = 1
+
+
 
 
 
