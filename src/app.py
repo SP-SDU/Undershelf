@@ -162,23 +162,21 @@ def search():
     pagination = Book.query.paginate(page=page, per_page=per_page, error_out=False)
     books_data = [{'id': book.id, 'data': book.data} for book in pagination.items]
     
-    # Sort current page if sort parameter is provided
-    if sort:
-        sorted_data = BookSorter.sort_books(
-            [book['data'] for book in books_data], 
-            sort, 
-            ascending=(order == 'asc')
-        )
-        # Reattach IDs to sorted data
-        books = [{'id': books_data[i]['id'], 'data': book} for i, book in enumerate(sorted_data)]
-    else:
-        books = books_data
+    # Sort current page
+    sorted_data = BookSorter.sort_books(
+        [book['data'] for book in books_data], 
+        sort, 
+        ascending=(order == 'asc')
+    )
+    # Reattach IDs to sorted data
+    books = [{'id': books_data[i]['id'], 'data': book} for i, book in enumerate(sorted_data)]
 
     return render_template(
         'search.html',
         books=books,
         pagination=pagination,
         current_sort=sort,
+        current_order=order,
         is_seeding=is_seeding
     )
 

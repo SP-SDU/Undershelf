@@ -4,8 +4,21 @@
 
 {% block content %}
 <div class="box">
-    <div class="box-header">
+    <div class="box-header with-border">
         <h3 class="box-title">Books</h3>
+        <div class="box-tools">
+            <div class="input-group input-group-sm" style="width: 200px;">
+                <select id="sort-select" class="form-control" onchange="updateSort(this.value)">
+                    <option value="title,asc" {% if current_sort == 'title' and current_order == 'asc' %}selected{% endif %}>Title (A-Z)</option>
+                    <option value="title,desc" {% if current_sort == 'title' and current_order == 'desc' %}selected{% endif %}>Title (Z-A)</option>
+                    <option value="rating,desc" {% if current_sort == 'rating' and current_order == 'desc' %}selected{% endif %}>Highest Rating</option>
+                    <option value="rating,asc" {% if current_sort == 'rating' and current_order == 'asc' %}selected{% endif %}>Lowest Rating</option>
+                    <option value="date,desc" {% if current_sort == 'date' and current_order == 'desc' %}selected{% endif %}>Newest First</option>
+                    <option value="date,asc" {% if current_sort == 'date' and current_order == 'asc' %}selected{% endif %}>Oldest First</option>
+                    <option value="ratings_count,desc" {% if current_sort == 'ratings_count' and current_order == 'desc' %}selected{% endif %}>Most Reviews</option>
+                </select>
+            </div>
+        </div>
     </div>
     <div class="box-body">
         {% if is_seeding %}
@@ -52,14 +65,14 @@
             <ul class="pagination">
                 {% if pagination.has_prev %}
                 <li>
-                    <a href="{{ url_for('search', page=pagination.prev_num, sort=current_sort) }}">&laquo;</a>
+                    <a href="{{ url_for('search', page=pagination.prev_num, sort=current_sort, order=current_order) }}">&laquo;</a>
                 </li>
                 {% endif %}
 
                 {%- for page in pagination.iter_pages() %}
                     {% if page %}
                         <li {% if page == pagination.page %}class="active"{% endif %}>
-                            <a href="{{ url_for('search', page=page, sort=current_sort) }}">{{ page }}</a>
+                            <a href="{{ url_for('search', page=page, sort=current_sort, order=current_order) }}">{{ page }}</a>
                         </li>
                     {% else %}
                         <li class="disabled"><span>…</span></li>
@@ -68,7 +81,7 @@
 
                 {% if pagination.has_next %}
                 <li>
-                    <a href="{{ url_for('search', page=pagination.next_num, sort=current_sort) }}">&raquo;</a>
+                    <a href="{{ url_for('search', page=pagination.next_num, sort=current_sort, order=current_order) }}">&raquo;</a>
                 </li>
                 {% endif %}
             </ul>
@@ -76,4 +89,18 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block tail_js %}
+{{ super() }}
+<script>
+function updateSort(value) {
+    const [sort, order] = value.split(',');
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('sort', sort);
+    currentUrl.searchParams.set('order', order);
+    currentUrl.searchParams.set('page', '1'); // Reset to first page when sorting
+    window.location.href = currentUrl.toString();
+}
+</script>
 {% endblock %}
