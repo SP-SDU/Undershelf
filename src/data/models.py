@@ -1,5 +1,6 @@
+"""Database models for user authentication and book storage."""
 from flask_sqlalchemy import SQLAlchemy
-from flask_security import UserMixin, RoleMixin
+from flask_security.core import UserMixin, RoleMixin
 
 db = SQLAlchemy()
 
@@ -10,15 +11,20 @@ roles_users = db.Table(
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
 
+
 class Role(db.Model, RoleMixin):
+    """Role model for user authentication."""
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
     def __str__(self):
+        """Return string representation of role."""
         return self.name
 
+
 class User(db.Model, UserMixin):
+    """User model for authentication and authorization."""
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255))
@@ -28,21 +34,26 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     roles = db.relationship('Role', secondary=roles_users,
-                            backref=db.backref('users', lazy='dynamic'))
+                                 backref=db.backref('users', lazy='dynamic'))
 
     def __str__(self):
+        """Return string representation of user."""
         return self.email
 
+
 class Book(db.Model):
+    """Book model for storing book information."""
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.JSON, nullable=False)
 
     @property
     def book_id(self):
+        """Get the book ID from JSON data."""
         return self.data.get('Id')
 
     @staticmethod
     def from_json(json_data):
+        """Create a Book instance from JSON data."""
         if not json_data.get('Id'):
             raise ValueError("Book data must contain an 'Id' field")
         return Book(data=json_data)
