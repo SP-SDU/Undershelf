@@ -82,6 +82,10 @@ booklistMatch = booklistMatch.sort_values(by= ['result'], ascending=False, kind=
 
 print(booklistMatch.result[:10])
 
+dimensions = candidateMtrx.shape
+rows, columns = dimensions
+print("Candidate Rows:", rows)
+print("Candidate Columns:", columns)
 
 
 
