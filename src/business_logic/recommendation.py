@@ -7,6 +7,8 @@ merged_fp = 'merged_dataframe.csv'
 merged_df= pd.read_csv(merged_fp, index_col="User_id")
 merged_df=merged_df.dropna()
 
+# print(len(merged_df.index.unique()))
+
 rng = np.random.default_rng(None)
 indexRandom = rng.integers(low=0, high=len(merged_df.index), size=1)
 indexRandom = indexRandom[0]
@@ -53,31 +55,33 @@ candidateMtrx = booklistMatch
 candidateMtrx = encode_and_bind(candidateMtrx, "categories")
 candidateMtrx = candidateMtrx.drop(['Id', 'review/score', 'description', 'authors', 'image', 'publisher', 'publishedDate', 'ratingsCount'], axis=1)
 
-candidatetest = candidateMtrx
-
 candidateMtrx = candidateMtrx.to_numpy(dtype=int)
 weightedCnddtGnrMtrx = np.multiply(interestGnrVctr,candidateMtrx)           
 weightedAvrg = weightedCnddtGnrMtrx.sum(axis=1) 
 
 
-dimensions = candidateMtrx.shape
-rows, columns = dimensions
+# dimensions = candidateMtrx.shape
+# rows, columns = dimensions
+# 
+# 
+# print("User Categories: ", userCtg["categories"].unique(), sep="\n")
+# 
+# print("Candidate Rows:", rows)
+# print("Candidate Columns:", columns)
+# 
+# dimensions = userGnrMtrx.shape
+# rows, columns = dimensions
+# 
+# print("UserGnr Rows: ", rows)
+# print("UserGnr Columns: ", columns)
+# print("RESULT :",weightedAvrg, sep="\n")
 
+booklistMatch.insert(0, "result", weightedAvrg)
+booklistMatch = booklistMatch[~booklistMatch.index.duplicated(keep='first')]
+booklistMatch = booklistMatch.sort_values(by= ['result'], ascending=False, kind="mergesort")
 
-print("User Categories: ", userCtg["categories"].unique(), sep="\n")
+print(booklistMatch.result[:10])
 
-print("Candidate Rows:", rows)
-print("Candidate Columns:", columns)
-
-dimensions = userGnrMtrx.shape
-rows, columns = dimensions
-
-print("UserGnr Rows: ", rows)
-print("UserGnr Columns: ", columns)
-print("RESULT :",weightedAvrg, sep="\n")
-print("Candidate Genre log: ",list(candidatetest), sep="\n")
-
-# TODO Test proof. Identify error when max genre = 1
 
 
 
