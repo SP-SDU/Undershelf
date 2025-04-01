@@ -10,11 +10,20 @@ merged_df=merged_df.dropna()
 rng = np.random.default_rng(None)
 indexRandom = rng.integers(low=0, high=len(merged_df.index), size=1)
 indexRandom = indexRandom[0]
-
 userid = merged_df.iloc[indexRandom]
 userid = userid.name
 
+userCtg = merged_df.loc[[userid],["categories"]]
+ctgLen = len(userCtg["categories"].unique())
 
+if  ctgLen ==  1:
+    rng = np.random.default_rng(None)
+    indexRandom = rng.integers(low=0, high=len(merged_df.index), size=1)
+    indexRandom = indexRandom[0]
+    userid = merged_df.iloc[indexRandom]
+    userid = userid.name
+    userCtg = merged_df.loc[[userid],["categories"]]
+    ctgLen = len(userCtg["categories"].unique())
 
 print("User: ",userid)
 
@@ -36,7 +45,7 @@ interestGnrVctr = weightedGnrMtrx.sum(axis=0)
 interestGnrVctr = interestGnrVctr/np.linalg.norm(interestGnrVctr)
 
 titleindex_df = merged_df.set_index('Title')
-userCtg = merged_df.loc[[userid],["categories"]]
+
 booklistMatch = titleindex_df['categories'].isin(userCtg.loc[:,'categories'])
 booklistMatch = titleindex_df[booklistMatch]
 candidateMtrx = booklistMatch
