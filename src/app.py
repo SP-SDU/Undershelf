@@ -4,7 +4,7 @@ import flask_admin
 from flask_admin import helpers as admin_helpers
 from data.models import db, User, Role, Book
 from presentation.views import views, MyModelView, UserView, CustomView
-from data.seeding import background_seed  # Updated import path
+from data.seeding import background_seed
 
 # Create Flask application
 app = Flask(__name__, 

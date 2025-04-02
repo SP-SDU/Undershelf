@@ -20,7 +20,7 @@
 - Python 3.12 or higher
 - pip (Python package manager)
 
-### Installation (Or run task Install dependencies in VSCode)
+### Installation
 
 1. Clone the repository:
    ```
@@ -31,12 +31,12 @@
 2. Create and activate a virtual environment:
    ```bash
    # Windows
-   python -m venv venv
-   .\venv\Scripts\activate
+   python -m venv .venv
+   .\.venv\Scripts\activate
 
    # Linux/MacOS
-   python -m venv venv
-   source venv/bin/activate
+   python -m venv .venv
+   source .venv/bin/activate
    ```
 
 3. Install dependencies:
@@ -46,7 +46,7 @@
 
 ### Running the Application (Or debug F5 in VSCode)
 
-1. Ensure virtual environment is activated (you should see `(venv)` in your terminal)
+1. Ensure virtual environment is activated (you should see `(.venv)` in your terminal)
 
 2. Start the Flask server:
    ```

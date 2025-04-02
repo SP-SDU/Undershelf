@@ -4,7 +4,7 @@
         {
             "label": "Create Virtual Environment",
             "type": "shell",
-            "command": "${command:python.interpreterPath} -m venv venv",
+            "command": "python -m venv .venv",
             "group": "build",
             "presentation": {
                 "reveal": "always",
@@ -21,17 +21,14 @@
                 "pip",
                 "install",
                 "-r",
-                "requirements.txt"
+                "src/requirements.txt"
             ],
             "group": "build",
             "presentation": {
                 "reveal": "always",
                 "panel": "new"
             },
-            "problemMatcher": [],
-            "dependsOn": [
-                "Create Virtual Environment"
-            ]
+            "problemMatcher": []
         }
     ]
 }
