@@ -1,8 +1,6 @@
 """Database models for user authentication and book storage."""
-from flask_sqlalchemy import SQLAlchemy
 from flask_security.core import UserMixin, RoleMixin
-
-db = SQLAlchemy()
+from extensions import db
 
 # Define models
 roles_users = db.Table(
@@ -26,15 +24,14 @@ class Role(db.Model, RoleMixin):
 class User(db.Model, UserMixin):
     """User model for authentication and authorization."""
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(255), nullable=False)
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
+    first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))  
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
-    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
-    roles = db.relationship('Role', secondary=roles_users,
-                                 backref=db.backref('users', lazy='dynamic'))
+    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
     def __str__(self):
         """Return string representation of user."""

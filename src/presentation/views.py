@@ -1,51 +1,35 @@
 from flask import Blueprint, render_template, redirect, url_for, request, abort
 from flask_admin.contrib import sqla
-from flask_admin import BaseView, expose
 from flask_security import current_user
-from wtforms import PasswordField
 from business.book_sorter import BookSorter
-from data.models import Role, User, Book, db
+from data.models import Book
 
-# Create Blueprint
 views = Blueprint('views', __name__)
+
 
 class MyModelView(sqla.ModelView):
     def is_accessible(self):
-        if not current_user.is_active or not current_user.is_authenticated:
-            return False
-        return current_user.has_role('superuser')
+        return (current_user.is_active and
+                current_user.is_authenticated)
 
-    def _handle_view(self, name, **kwargs):
+    def _handle_view(self, name):
         if not self.is_accessible():
-            if current_user.is_authenticated:
-                abort(403)
-            else:
-                return redirect(url_for('security.login', next=request.url))
+            return redirect(url_for('security.login'))
 
-    edit_modal = True
-    create_modal = True    
-    can_export = True
-    can_view_details = True
-    details_modal = True
 
-class UserView(MyModelView):
-    column_editable_list = ['email', 'first_name', 'last_name']
-    column_searchable_list = column_editable_list
-    column_exclude_list = ['password']
-    column_details_exclude_list = column_exclude_list
-    column_filters = column_editable_list
-    form_overrides = {
-        'password': PasswordField
-    }
+class CustomView(MyModelView):
+    list_template = 'admin/model/custom_list.html'
 
-class CustomView(BaseView):
-    @expose('/')
-    def index(self):
-        return self.render('admin/custom_index.html')
 
 @views.route('/')
 def index():
     return render_template('index.html')
+
+
+@views.route('/admin/')
+def admin_index():
+    return render_template('admin/index.html')
+
 
 @views.route('/search')
 def search():
@@ -54,19 +38,19 @@ def search():
     sort = request.args.get('sort', 'title')
     order = request.args.get('order', 'asc')
     view = request.args.get('view', 'grid')
-    
+
     pagination = Book.query.paginate(page=page, per_page=per_page, error_out=False)
     books_data = [{'id': book.id, 'data': book.data} for book in pagination.items]
-    
+
     # Create a dictionary mapping book data to IDs before sorting
     id_map = {str(book['data']): book['id'] for book in books_data}
-    
+
     sorted_data = BookSorter.sort_books(
         [book['data'] for book in books_data], 
-        sort, 
+        sort,
         ascending=(order == 'asc')
     )
-    
+
     # Use the id_map to maintain correct IDs after sorting
     books = [{'id': id_map[str(book)], 'data': book} for book in sorted_data]
 
@@ -78,6 +62,7 @@ def search():
         current_order=order,
         view=view
     )
+
 
 @views.route('/book/<int:book_id>')
 def book_details(book_id):

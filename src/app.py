@@ -1,15 +1,17 @@
-from flask import Flask
+from flask import Flask, url_for
 from flask_security import Security, SQLAlchemyUserDatastore
 import flask_admin
+from sqlalchemy import inspect
+from extensions import db
+from data.models import User, Role
+from presentation.views import MyModelView, CustomView, views
 from flask_admin import helpers as admin_helpers
-from data.models import db, User, Role, Book
-from presentation.views import views, MyModelView, UserView, CustomView
-from data.seeding import background_seed
+from data.seeds import seed
 
 # Create Flask application
-app = Flask(__name__, 
-           template_folder='presentation/templates',
-           static_folder='presentation/static')
+app = Flask(__name__,
+            template_folder='presentation/templates',
+            static_folder='presentation/static')
 app.config.from_pyfile('config.py')
 
 # Initialize database
@@ -19,28 +21,39 @@ db.init_app(app)
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
-# Register blueprints
-app.register_blueprint(views)
-
-# Initialize database tables
-with app.app_context():
-    db.create_all()
-    if Book.query.count() == 0:
-        background_seed(app)
-
 # Create admin interface
 admin = flask_admin.Admin(
     app,
-    'My Dashboard',
+    'Dashboard Example',
     base_template='my_master.html',
-    template_mode='bootstrap4',
+    template_mode='bootstrap3',
 )
 
-# Add admin views
-admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
-admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
-admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop',))
-admin.add_view(MyModelView(Book, db.session, menu_icon_type='fa', menu_icon_value='fa-book', name="Books"))
+# Register blueprints
+app.register_blueprint(views)
+
+with app.app_context():
+    db.create_all()
+
+    # Seed if any table is empty
+    if any(db.session.query(db.Model.metadata.tables[table]).count() == 0
+           for table in inspect(db.engine).get_table_names()):
+        seed(app, user_datastore)
+
+# Add admin model views
+admin.add_view(MyModelView(Role, db.session))
+admin.add_view(CustomView(User, db.session))
+
+
+@security.context_processor
+def security_context_processor():
+    return {
+        'admin_base_template': admin.base_template,
+        'admin_view': admin.index_view,
+        'h': admin_helpers,
+        'get_url': url_for
+    }
+
 
 if __name__ == '__main__':
     app.run(debug=True)

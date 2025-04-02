@@ -2,7 +2,7 @@
 SECRET_KEY = '123456790'
 
 # Create in-memory database
-DATABASE_FILE = 'db.sqlite'
+DATABASE_FILE = 'sqlite.db'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_FILE
 SQLALCHEMY_ECHO = True
 
@@ -24,3 +24,7 @@ SECURITY_POST_REGISTER_VIEW = "/admin/"
 SECURITY_REGISTERABLE = True
 SECURITY_SEND_REGISTER_EMAIL = False
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+# Role Constants
+ROLE_USER = 'user'
+ROLE_SUPERUSER = 'superuser'
