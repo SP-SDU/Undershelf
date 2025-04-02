@@ -1,61 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <title>{% block title %}{% endblock %} - BookSearch</title>
     
     {% block head_meta %}
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% endblock head_meta %}
 
+    
     {% block head_css %}
-    <!-- Bootstrap 3.3.6 -->
-    <link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- Theme style -->
-    <link href="{{url_for('static',filename='css/AdminLTE.min.css')}}" rel="stylesheet">
-    <!-- AdminLTE Skins -->
-    <link href="{{url_for('static',filename='css/skins/_all-skins.min.css')}}" rel="stylesheet">
+    <!-- DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     {% endblock head_css %}
 </head>
-<body class="hold-transition skin-blue layout-top-nav">
-    <div class="wrapper">
-        <header class="main-header">
-            <nav class="navbar navbar-static-top">
-                <div class="container">
-                    <div class="navbar-header">
-                        <a href="/" class="navbar-brand">BookSearch</a>
-                    </div>
-                    <div class="navbar-custom-menu">
-                        <ul class="nav navbar-nav">
-                            <li><a href="{{ url_for('views.search') }}">Search</a></li>
-                            {% if current_user.is_authenticated %}
-                                <li><a href="{{ url_for('admin.index') }}">Admin</a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
 
-        <div class="content-wrapper">
-            <div class="container">
-                <section class="content">
-                    {% block content %}{% endblock %}
-                </section>
+<body>
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+                <h1 class="text-2xl font-bold text-blue-600">BookHub</h1>
+                <nav class="flex space-x-6">
+                    <a href="/" class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Home
+                    </a>
+                    <a href="/search" class="flex items-center text-gray-600">Browse</a>
+                    <a href="/recommendations" class="flex items-center text-gray-600">Recommendations</a>
+                    <a href="/library" class="flex items-center text-gray-600">My Library</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="search" class="px-3 py-1 border rounded-lg" placeholder="Quick search">
+                <a class="p-2">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </a>
             </div>
         </div>
-    </div>
+    </header>
 
-    {% block tail_js %}
-    <!-- jQuery 2.2.3 -->
-    <script src="{{url_for('static',filename='plugins/jQuery/jquery-2.2.3.min.js')}}"></script>
-    <!-- Bootstrap 3.3.6 -->
-    <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
-    <!-- AdminLTE App -->
-    <script src="{{url_for('static',filename='js/app.min.js')}}"></script>
-    {% endblock tail_js %}
+    {% block content %}{% endblock %}
+
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4 grid grid-cols-4 gap-8">
+            <div>
+                <h3 class="font-bold mb-4">BookHub</h3>
+                <p class="text-gray-400 text-sm">Making reading accessible and enjoyable for everyone.</p>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4">Help &amp; Support</h3>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/shipping">Shipping</a></li>
+                    <li><a href="/returns">Returns</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4">Legal</h3>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/cookies">Cookie Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4">Connect</h3>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="/newsletter">Newsletter</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/community">Community</a></li>
+                    <li><a href="/about">About Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
+            &copy; 2024 BookHub. All rights reserved.
+        </div>
+    </footer>
 </body>
+
+{% block tail_js %}
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+{% endblock tail_js %}
 </html>

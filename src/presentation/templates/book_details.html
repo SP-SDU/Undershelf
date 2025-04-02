@@ -3,50 +3,50 @@
 {% block title %}{{ book.data.Title }} - BookSearch{% endblock %}
 
 {% block content %}
-<div class="box">
-    <div class="box-header">
-        <h3 class="box-title">Book Details</h3>
+<div class="card bg-base-100 shadow-xl">
+    <div class="card-header">
+        <h3 class="card-title">Book Details</h3>
     </div>
-    <div class="box-body">
-        <div class="row">
-            <div class="col-md-4">
+    <div class="card-body">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-4">
                 {% if book.data.image %}
-                <img src="{{ book.data.image }}" class="img-responsive" alt="{{ book.data.Title }}">
+                <img src="{{ book.data.image }}" class="w-full rounded-lg" alt="{{ book.data.Title }}">
                 {% else %}
-                <div class="well text-center" style="height: 400px; display: flex; align-items: center; justify-content: center;">
-                    <span class="text-muted">No Image Available</span>
+                <div class="flex items-center justify-center h-96 bg-base-200 rounded-lg">
+                    <span class="text-base-content/60">No Image Available</span>
                 </div>
                 {% endif %}
             </div>
-            <div class="col-md-8">
-                <h2>{{ book.data.Title }}</h2>
-                <p><strong>Author(s):</strong> 
+            <div class="md:col-span-8">
+                <h2 class="text-2xl font-bold mb-4">{{ book.data.Title }}</h2>
+                <p class="mb-2"><strong>Author(s):</strong> 
                     {% if book.data.authors %}
                         {{ book.data.authors|replace("['", "")|replace("']", "")|replace("'", "") }}
                     {% else %}
                         Unknown
                     {% endif %}
                 </p>
-                <p><strong>Rating:</strong> {{ book.data['review/score']|default('N/A') }}</p>
-                <p><strong>Reviews:</strong> {{ book.data.ratingsCount|default('0') }}</p>
-                <p><strong>Published:</strong> {{ book.data.publishedDate|default('N/A') }}</p>
+                <p class="mb-2"><strong>Rating:</strong> {{ book.data['review/score']|default('N/A') }}</p>
+                <p class="mb-2"><strong>Reviews:</strong> {{ book.data.ratingsCount|default('0') }}</p>
+                <p class="mb-2"><strong>Published:</strong> {{ book.data.publishedDate|default('N/A') }}</p>
                 
                 {% if book.data.publisher %}
-                <p><strong>Publisher:</strong> {{ book.data.publisher }}</p>
+                <p class="mb-2"><strong>Publisher:</strong> {{ book.data.publisher }}</p>
                 {% endif %}
                 
                 {% if book.data.categories %}
-                <p><strong>Categories:</strong> {{ book.data.categories|replace("['", "")|replace("']", "")|replace("'", "") }}</p>
+                <p class="mb-2"><strong>Categories:</strong> {{ book.data.categories|replace("['", "")|replace("']", "")|replace("'", "") }}</p>
                 {% endif %}
                 
                 {% if book.data.description %}
-                <div class="well">
-                    <h4>Description</h4>
+                <div class="bg-base-200 p-4 rounded-lg mt-4">
+                    <h4 class="text-lg font-semibold mb-2">Description</h4>
                     <p>{{ book.data.description }}</p>
                 </div>
                 {% endif %}
 
-                <a href="{{ url_for('views.search') }}" class="btn btn-default">
+                <a href="{{ url_for('views.search') }}" class="btn mt-4">
                     <i class="fa fa-arrow-left"></i> Back to Search
                 </a>
             </div>

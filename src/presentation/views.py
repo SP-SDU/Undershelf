@@ -53,23 +53,30 @@ def search():
     per_page = 50
     sort = request.args.get('sort', 'title')
     order = request.args.get('order', 'asc')
+    view = request.args.get('view', 'grid')
     
     pagination = Book.query.paginate(page=page, per_page=per_page, error_out=False)
     books_data = [{'id': book.id, 'data': book.data} for book in pagination.items]
+    
+    # Create a dictionary mapping book data to IDs before sorting
+    id_map = {str(book['data']): book['id'] for book in books_data}
     
     sorted_data = BookSorter.sort_books(
         [book['data'] for book in books_data], 
         sort, 
         ascending=(order == 'asc')
     )
-    books = [{'id': books_data[i]['id'], 'data': book} for i, book in enumerate(sorted_data)]
+    
+    # Use the id_map to maintain correct IDs after sorting
+    books = [{'id': id_map[str(book)], 'data': book} for book in sorted_data]
 
     return render_template(
         'search.html',
         books=books,
         pagination=pagination,
         current_sort=sort,
-        current_order=order
+        current_order=order,
+        view=view
     )
 
 @views.route('/book/<int:book_id>')
