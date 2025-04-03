@@ -41,7 +41,7 @@ class Seeds:
             print(f"Found CSV file at {csv_path}")
             # Read the merged CSV into a DataFrame.
             df = pd.read_csv(csv_path)
-            
+
             # --- Seed Book Data ---
             book_data_cols = [
                 'Id', 'Title', 'description', 'authors', 'image',
@@ -49,8 +49,10 @@ class Seeds:
             ]
             # Drop duplicates by the unique book identifier.
             books_df = df[book_data_cols].drop_duplicates(subset=['Id'])
+            books_df['authors'] = books_df['authors'].apply(lambda x: str(x).strip("[]").replace("'", "") if pd.notna(x) else None)
+            books_df['categories'] = books_df['categories'].apply(lambda x: str(x).strip("[]").replace("'", "") if pd.notna(x) else None)
             
-            batch_size = 1000  # Number of records to process per batch.
+            batch_size = 1000
             processed_books = 0
             for i in range(0, len(books_df), batch_size):
                 batch = books_df.iloc[i:i + batch_size]
@@ -67,8 +69,6 @@ class Seeds:
                             categories=row.get('categories'),
                             ratingsCount=row.get('ratingsCount')
                         )
-                        book.authors.strip("[]").replace("'", "").replace('"', "")
-                        book.categories.strip("[]").replace("'", "").replace('"', "")
                         db.session.add(book)
                     
                     db.session.commit()
