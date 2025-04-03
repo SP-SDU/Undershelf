@@ -593,4 +593,4 @@ cython_debug/
 .DS_Store
 
 # Too large files
-merged_dataframe.json
+merged_dataframe.csv

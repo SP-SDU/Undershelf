@@ -39,18 +39,22 @@ class User(db.Model, UserMixin):
 
 
 class Book(db.Model):
-    """Book model for storing book information."""
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.JSON, nullable=False)
+    __tablename__ = 'books'
+    id = db.Column(db.String, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.Text)
+    authors = db.Column(db.String)
+    image = db.Column(db.String)
+    publisher = db.Column(db.String)
+    publishedDate = db.Column(db.String)
+    categories = db.Column(db.String)
+    ratingsCount = db.Column(db.Float)
+    reviews = db.relationship('Review', backref='book', lazy=True)
 
-    @property
-    def book_id(self):
-        """Get the book ID from JSON data."""
-        return self.data.get('Id')
 
-    @staticmethod
-    def from_json(json_data):
-        """Create a Book instance from JSON data."""
-        if not json_data.get('Id'):
-            raise ValueError("Book data must contain an 'Id' field")
-        return Book(data=json_data)
+class Review(db.Model):
+    __tablename__ = 'reviews'
+    review_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    book_id = db.Column(db.String, db.ForeignKey('books.id'), nullable=False)
+    user_id = db.Column(db.String)
+    review_score = db.Column(db.Float)
