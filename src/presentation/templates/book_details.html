@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.Title }} - BookSearch{% endblock %}
+
+{% block content %}
+<div class="card bg-base-100 shadow-xl">
+    <div class="card-header">
+        <h3 class="card-title">Book Details</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-4">
+                {% if book.image %}
+                <img src="{{ book.image }}" class="w-full rounded-lg" alt="{{ book.Title }}">
+                {% else %}
+                <div class="flex items-center justify-center h-96 bg-base-200 rounded-lg">
+                    <span class="text-base-content/60">No Image Available</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="md:col-span-8">
+                <h2 class="text-2xl font-bold mb-4">{{ book.Title }}</h2>
+                <p class="mb-2"><strong>Author(s):</strong> 
+                    {% if book.authors %}
+                        {{ book.authors }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </p>
+                <p class="mb-2"><strong>Rating:</strong> {{ book['review/score']|default('N/A') }}</p>
+                <p class="mb-2"><strong>Reviews:</strong> {{ book.ratingsCount|default('0') }}</p>
+                <p class="mb-2"><strong>Published:</strong> {{ book.publishedDate|default('N/A') }}</p>
+                
+                {% if book.publisher %}
+                <p class="mb-2"><strong>Publisher:</strong> {{ book.publisher }}</p>
+                {% endif %}
+                
+                {% if book.categories %}
+                <p class="mb-2"><strong>Categories:</strong> {{ book.categories }}</p>
+                {% endif %}
+                
+                {% if book.description %}
+                <div class="bg-base-200 p-4 rounded-lg mt-4">
+                    <h4 class="text-lg font-semibold mb-2">Description</h4>
+                    <p>{{ book.description }}</p>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('views.search') }}" class="btn mt-4">
+                    <i class="fa fa-arrow-left"></i> Back to Search
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
