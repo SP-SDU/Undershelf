@@ -16,6 +16,28 @@
 
 ## Getting Started 🚀
 
+# 📂 Large Files Storage
+To keep the repository lightweight, large `.csv` files are stored externally.
+
+🔗 **Download Files:**  
+- [merged_dataframe.csv](https://drive.google.com/your-file-link)  
+After downloading, place the files in:
+BookSearch
+
+Running the Preprocessing Script
+
+The preprocessing script takes raw book data and transforms it into a structured format.
+
+Run the Script
+python preprocessing.py
+
+Output
+
+The processed dataset is saved as data/processed_books.csv.
+
+Logs and progress updates are printed to the console.
+
+
 ### Prerequisites
 - Python 3.12 or higher
 - pip (Python package manager)
