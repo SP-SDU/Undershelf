@@ -67,6 +67,8 @@ class Seeds:
                             categories=row.get('categories'),
                             ratingsCount=row.get('ratingsCount')
                         )
+                        book.authors.strip("[]").replace("'", "").replace('"', "")
+                        book.categories.strip("[]").replace("'", "").replace('"', "")
                         db.session.add(book)
                     
                     db.session.commit()

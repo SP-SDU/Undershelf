@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, abort
 from flask_admin.contrib import sqla
 from flask_security import current_user
-from business.book_sorter import BookSorter
+from business.merge_sort import MergeSort
 from data.models import Book
 
 views = Blueprint('views', __name__)
@@ -40,23 +40,14 @@ def search():
     view = request.args.get('view', 'grid')
 
     pagination = Book.query.paginate(page=page, per_page=per_page, error_out=False)
-    books_data = [{'id': book.id, 'data': book.data} for book in pagination.items]
+    books = pagination.items
 
-    # Create a dictionary mapping book data to IDs before sorting
-    id_map = {str(book['data']): book['id'] for book in books_data}
-
-    sorted_data = BookSorter.sort_books(
-        [book['data'] for book in books_data], 
-        sort,
-        ascending=(order == 'asc')
-    )
-
-    # Use the id_map to maintain correct IDs after sorting
-    books = [{'id': id_map[str(book)], 'data': book} for book in sorted_data]
+    # Sort the books using the MergeSort class
+    sorted_books = MergeSort.sort_books(books, sort, ascending=(order == 'asc'))
 
     return render_template(
         'search.html',
-        books=books,
+        books=sorted_books,
         pagination=pagination,
         current_sort=sort,
         current_order=order,
@@ -64,7 +55,7 @@ def search():
     )
 
 
-@views.route('/book/<int:book_id>')
+@views.route('/book/<string:book_id>')
 def book_details(book_id):
     book = Book.query.get_or_404(book_id)
     return render_template('book_details.html', book=book)

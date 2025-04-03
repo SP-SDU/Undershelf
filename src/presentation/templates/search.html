@@ -78,16 +78,16 @@
                 {% if view == 'list' %}
                 <tr class="border-b border-base-300">
                     <td>
-                        <div class="font-bold">{{ book.data.Title }}</div>
+                        <div class="font-bold">{{ book.title }}</div>
                     </td>
                     <td>
-                        {% if book.data.authors %}
-                        {{ book.data.authors|replace("['", "")|replace("']", "")|replace("'", "") }}
+                        {% if book.authors %}
+                        {{ book.authors }}
                         {% else %}
                         Unknown
                         {% endif %}
                     </td>
-                    <td>{{ book.data.publishedDate }}</td>
+                    <td>{{ book.publishedDate }}</td>
                     <td>
                         <a href="{{ url_for('views.book_details', book_id=book.id) }}"
                             class="btn btn-xs">View</a>
@@ -96,8 +96,8 @@
                 {% else %}
                 <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
                     <figure class="px-4 pt-4">
-                        {% if book.data.image %}
-                        <img src="{{ book.data.image }}" alt="{{ book.data.Title }}"
+                        {% if book.image %}
+                        <img src="{{ book.image }}" alt="{{ book.title }}"
                             class="rounded-xl h-48 object-cover w-full" />
                         {% else %}
                         <div class="bg-base-200 rounded-xl h-48 w-full flex items-center justify-center">
@@ -106,10 +106,10 @@
                         {% endif %}
                     </figure>
                     <div class="card-body p-4">
-                        <h2 class="card-title text-sm">{{ book.data.Title|truncate(50) }}</h2>
+                        <h2 class="card-title text-sm">{{ book.title|truncate(50) }}</h2>
                         <p class="text-xs text-base-content/70">
-                            {% if book.data.authors %}
-                            {{ book.data.authors|replace("['", "")|replace("']", "")|replace("'", "")|truncate(40) }}
+                            {% if book.authors %}
+                            {{ book.authors|truncate(40) }}
                             {% else %}
                             Unknown
                             {% endif %}

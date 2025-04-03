@@ -19,7 +19,7 @@
 ### Prerequisites
 - Python 3.12 or higher
 - pip (Python package manager)
-- Download [merged_dataframe.json](https://1drv.ms/u/c/140e3a47d75121ed/EW6VRvvN3x5FkHS0wlQ5tTgB7y-bmAreTHk-pTdlCRyPtA?e=91ezZM) and place it in the `src/data` directory.
+- Download [merged_dataframe.csv](https://drive.google.com/file/d/1MVRHs_CwKTBR2Rpakx920f277IcJ0q6X/view) and place it in the `src/data` directory.
 
 ### Installation
 
