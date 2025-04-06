@@ -4,4 +4,4 @@ Flask-SQLAlchemy
 Flask-Security>=1.7.5
 setuptools
 numpy
-pandas
+polars
