@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 # Load dataset
-df = pd.read_csv("merged_dataframe.csv")
+df = pd.read_csv("src/data/merged_dataframe.csv")
 
 # Display first 5 rows
 print(df.head())

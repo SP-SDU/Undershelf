@@ -594,3 +594,4 @@ cython_debug/
 
 # Too large files
 merged_dataframe.csv
+.qodo
