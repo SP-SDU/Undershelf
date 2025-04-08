@@ -20,12 +20,7 @@
                 "--no-reload"
             ],
             "jinja": true,
-            "autoStartBrowser": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bRunning on\\s+http?://127.0.0.1:(\\d+)",
-                "uriFormat": "http://127.0.0.1:%s"
-            }
+            "autoStartBrowser": true
         }
     ]
 }
