@@ -1,8 +1,4 @@
-import logging
-
 from django.apps import AppConfig
-
-logger = logging.getLogger("seeder")
 
 
 class DataAccessConfig(AppConfig):
