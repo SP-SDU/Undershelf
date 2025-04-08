@@ -21,7 +21,7 @@ def search(request):
     paginator = Paginator(books_query, per_page)
     page_obj = paginator.get_page(page)
 
-    # Get books for current page and sort them
+    # TODO: Unexpected behavior when sorting, it is sorting only the page items
     books = list(page_obj.object_list)
     sorted_books = MergeSort.sort_books(books, sort, ascending=(order == "asc"))
 
