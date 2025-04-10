@@ -5,27 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Flask",
+            "name": "Python Debugger: Django",
             "type": "debugpy",
             "request": "launch",
-            "module": "flask",
-            "cwd": "${workspaceFolder}/src",
-            "env": {
-                "FLASK_APP": "app.py",
-                "FLASK_DEBUG": "1"
-            },
             "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload"
+                "runserver"
             ],
-            "jinja": true,
-            "autoStartBrowser": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bRunning on\\s+http?://127.0.0.1:(\\d+)",
-                "uriFormat": "http://127.0.0.1:%s"
-            }
+            "django": true,
+            "autoStartBrowser": true,
+            "program": "${workspaceFolder}\\src\\manage.py",
         }
     ]
 }

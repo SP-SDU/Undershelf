@@ -1,61 +1,49 @@
-from flask import Blueprint, render_template, redirect, url_for, request, abort
-from flask_admin.contrib import sqla
-from flask_security import current_user
-from business.merge_sort import MergeSort
-from data.models import Book
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, render
 
-views = Blueprint('views', __name__)
+from buisness_logic.merge_sort import MergeSort
+from data_access.models import Book
 
 
-class MyModelView(sqla.ModelView):
-    def is_accessible(self):
-        return (current_user.is_active and
-                current_user.is_authenticated)
-
-    def _handle_view(self, name):
-        if not self.is_accessible():
-            return redirect(url_for('security.login'))
+def index(request):
+    return render(request, "index.html")
 
 
-class CustomView(MyModelView):
-    list_template = 'admin/model/custom_list.html'
+def search(request):
+    page = request.GET.get("page", 1)
+    per_page = 52
+    sort = request.GET.get("sort", "title")
+    order = request.GET.get("order", "asc")
+    view = request.GET.get("view", "grid")
+    books_query = Book.objects.all().order_by("id")
+
+    # Create paginator
+    paginator = Paginator(books_query, per_page)
+    page_obj = paginator.get_page(page)
+
+    # TODO: Unexpected behavior when sorting, it is sorting only the page items
+    books = list(page_obj.object_list)
+    sorted_books = MergeSort.sort_books(books, sort, ascending=(order == "asc"))
+
+    context = {
+        "books": sorted_books,
+        "page_obj": page_obj,
+        "current_sort": sort,
+        "current_order": order,
+        "view": view,
+    }
+
+    return render(request, "search.html", context)
 
 
-@views.route('/')
-def index():
-    return render_template('index.html')
+def book_details(request, book_id):
+    book = get_object_or_404(Book, pk=book_id)
+    return render(request, "book_details.html", {"book": book})
 
 
-@views.route('/admin/')
-def admin_index():
-    return render_template('admin/index.html')
+def login(request):
+    return render(request, "login.html")
 
 
-@views.route('/search')
-def search():
-    page = request.args.get('page', 1, type=int)
-    per_page = 50
-    sort = request.args.get('sort', 'title')
-    order = request.args.get('order', 'asc')
-    view = request.args.get('view', 'grid')
-
-    pagination = Book.query.paginate(page=page, per_page=per_page, error_out=False)
-    books = pagination.items
-
-    # Sort the books using the MergeSort class
-    sorted_books = MergeSort.sort_books(books, sort, ascending=(order == 'asc'))
-
-    return render_template(
-        'search.html',
-        books=sorted_books,
-        pagination=pagination,
-        current_sort=sort,
-        current_order=order,
-        view=view
-    )
-
-
-@views.route('/book/<string:book_id>')
-def book_details(book_id):
-    book = Book.query.get_or_404(book_id)
-    return render_template('book_details.html', book=book)
+def signup(request):
+    return render(request, "signup.html")

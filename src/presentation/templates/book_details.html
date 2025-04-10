@@ -27,9 +27,9 @@
                         Unknown
                     {% endif %}
                 </p>
-                <p class="mb-2"><strong>Rating:</strong> {{ book['review/score']|default('N/A') }}</p>
-                <p class="mb-2"><strong>Reviews:</strong> {{ book.ratingsCount|default('0') }}</p>
-                <p class="mb-2"><strong>Published:</strong> {{ book.publishedDate|default('N/A') }}</p>
+                <p class="mb-2"><strong>Rating:</strong> {{ book.review_score|default:"N/A" }}</p>
+                <p class="mb-2"><strong>Reviews:</strong> {{ book.ratingsCount|default:"0" }}</p>
+                <p class="mb-2"><strong>Published:</strong> {{ book.publishedDate|default:"N/A" }}</p>
                 
                 {% if book.publisher %}
                 <p class="mb-2"><strong>Publisher:</strong> {{ book.publisher }}</p>
@@ -46,7 +46,7 @@
                 </div>
                 {% endif %}
 
-                <a href="{{ url_for('views.search') }}" class="btn mt-4">
+                <a href="{% url 'search' %}" class="btn mt-4">
                     <i class="fa fa-arrow-left"></i> Back to Search
                 </a>
             </div>
