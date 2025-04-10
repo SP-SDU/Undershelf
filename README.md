@@ -25,8 +25,8 @@
 
 1. Clone the repository:
    ```
-   git clone https://github.com/SP-SDU/BookSearch.git
-   cd BookSearch
+   git clone https://github.com/SP-SDU/Undershelf.git
+   cd Undershelf
    ```
 
 2. Create and activate a virtual environment:
