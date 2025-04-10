@@ -1,25 +1,36 @@
+import threading
+import os
 import logging
-
 from django.apps import AppConfig
+from django.conf import settings
+from django.core.management import call_command
+from django.db.models.signals import post_migrate
 
-logger = logging.getLogger("seeder")
+logger = logging.getLogger(__name__)
 
+FILE_PATH = os.path.join(settings.BASE_DIR, 'data_access', 'merged_dataframe.csv')
 
 class DataAccessConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "data_access"
 
     def ready(self):
-        """
-        Method called when Django has loaded all apps and is ready.
-        We use this to initialize our database with seed data.
-        """
-        # Import here to avoid AppRegistryNotReady exception
-        import sys
+        if settings.DEBUG:
+            post_migrate.connect(init_seed_data, sender=self)
 
-        from data_access.seeds import seed
 
-        if "runserver" in sys.argv:
-            # Only run the seeder in the main process to avoid double-seeding
-            if not any("reload" in arg for arg in sys.argv):
-                seed()
+def init_seed_data(sender, **kwargs):
+    from data_access.models import Book
+
+    if Book.objects.exists():
+        logger.info("Database already seeded. Skipping.")
+        return
+
+    def run():
+        try:
+            call_command("import_data", file_path=FILE_PATH)
+            logger.info("Seeding complete.")
+        except Exception as e:
+            logger.error("Seeding failed: %s", e)
+
+    threading.Thread(target=run, daemon=True).start()
