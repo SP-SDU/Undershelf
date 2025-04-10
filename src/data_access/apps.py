@@ -19,8 +19,7 @@ class DataAccessConfig(AppConfig):
         # Skip if not in DEBUG mode and non-main processes in runserver to avoid duplicate runs
         if (
             not settings.DEBUG
-            or "runserver" in sys.argv
-            and os.environ.get("RUN_MAIN") != "true"
+            or ("runserver" in sys.argv and os.environ.get("RUN_MAIN") != "true")
         ):
             return
 
