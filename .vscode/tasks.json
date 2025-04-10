@@ -21,9 +21,120 @@
                 "pip",
                 "install",
                 "-r",
-                "src/requirements.txt"
+                "requirements.txt"
             ],
             "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "pytest",
+                "-v"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Django: Makemigrations",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "src/manage.py",
+                "makemigrations"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Django: Migrate",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "src/manage.py",
+                "migrate"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Django: Import Data",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "src/manage.py",
+                "import_data",
+                "src/data_access/merged_dataframe.csv"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Django: Createsuperuser",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "src/manage.py",
+                "createsuperuser"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Django: Shell",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "src/manage.py",
+                "shell"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Django: Collectstatic",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "src/manage.py",
+                "collectstatic",
+                "--no-input"
+            ],
+            "group": "none",
             "presentation": {
                 "reveal": "always",
                 "panel": "new"

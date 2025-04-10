@@ -42,7 +42,7 @@
 
 3. Install dependencies:
    ```
-   pip install -r src/requirements.txt
+   pip install -r requirements.txt
    ```
 
 ### Running the Application (Or debug F5 in VSCode)
@@ -58,6 +58,20 @@
    ```
    http://localhost:8000
    ```
+
+### Available Commands 🔧
+
+The following commands are available in addition to those explained above:
+
+| Command | Description |
+|---------|-------------|
+| `python -m pytest -v` | Run all tests |
+| `python src/manage.py makemigrations` | Create new database migrations |
+| `python src/manage.py migrate` | Apply database migrations |
+| `python src/manage.py import_data src/data_access/merged_dataframe.csv` | Import data from the CSV file |
+| `python src/manage.py createsuperuser` | Create an admin user |
+| `python src/manage.py shell` | Open Django's interactive shell |
+| `python src/manage.py collectstatic --no-input` | Collect static files |
 
 ## Contributing 🤝
 

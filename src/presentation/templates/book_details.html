@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ book.Title }} - BookSearch{% endblock %}
+{% block title %}{{ book.title }} - BookSearch{% endblock %}
 
 {% block content %}
 <div class="card bg-base-100 shadow-xl">
@@ -11,7 +11,7 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
             <div class="md:col-span-4">
                 {% if book.image %}
-                <img src="{{ book.image }}" class="w-full rounded-lg" alt="{{ book.Title }}">
+                <img src="{{ book.image }}" class="w-full rounded-lg" alt="{{ book.title }}">
                 {% else %}
                 <div class="flex items-center justify-center h-96 bg-base-200 rounded-lg">
                     <span class="text-base-content/60">No Image Available</span>
@@ -19,7 +19,7 @@
                 {% endif %}
             </div>
             <div class="md:col-span-8">
-                <h2 class="text-2xl font-bold mb-4">{{ book.Title }}</h2>
+                <h2 class="text-2xl font-bold mb-4">{{ book.title }}</h2>
                 <p class="mb-2"><strong>Author(s):</strong> 
                     {% if book.authors %}
                         {{ book.authors }}
