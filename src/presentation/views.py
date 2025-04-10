@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 
-from buisness_logic.merge_sort import MergeSort
+from business_logic.merge_sort import MergeSort
 from data_access.models import Book
 
 

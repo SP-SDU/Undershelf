@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "presentation.apps.PresentationConfig",
-    "buisness_logic.apps.BuisnessLogicConfig",
+    "business_logic.apps.BusinessLogicConfig",
     "data_access.apps.DataAccessConfig",
 ]
 
