@@ -9,8 +9,6 @@ from django.core.management import call_command
 
 logger = logging.getLogger(__name__)
 
-FILE_PATH = os.path.join(settings.BASE_DIR, "data_access", "merged_dataframe.csv")
-
 
 class DataAccessConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
@@ -41,8 +39,8 @@ class DataAccessConfig(AppConfig):
         try:
             from data_access.models import Book
 
-            if Book.objects.count() == 0 and os.path.exists(FILE_PATH):
-                call_command("import_data", FILE_PATH)
+            if Book.objects.count() == 0 and os.path.exists(settings.CSV_FILE_PATH):
+                call_command("import_data", settings.CSV_FILE_PATH)
 
         except Exception as e:
             logger.error(f"Error during data seeding: {e}")
