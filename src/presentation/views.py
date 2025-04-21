@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 
 from business_logic.bst import BST
@@ -46,6 +47,20 @@ def search(request):
         "request": request,
     }
     return render(request, "search.html", context)
+
+
+def autocomplete(request):
+    prefix = request.GET.get("q", "").strip()
+    max_results = int(request.GET.get("max", 10))
+    if not prefix:
+        return JsonResponse({"suggestions": []})
+    # Custom BST is super slow and is required for search.
+    # This uses indexed DB query (O(log n + k)) since it is not required for autocomplete.
+    books = Book.objects.filter(title__istartswith=prefix).order_by("title")[
+        :max_results
+    ]
+    data = [{"id": b.id, "title": b.title, "authors": b.authors} for b in books]
+    return JsonResponse({"suggestions": data})
 
 
 def book_details(request, book_id):
