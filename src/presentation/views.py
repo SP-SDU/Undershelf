@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 
+from business_logic.bst import BST
 from business_logic.merge_sort import MergeSort
 from data_access.models import Book
 
@@ -11,18 +12,29 @@ def index(request):
 
 def search(request):
     page = request.GET.get("page", 1)
-    per_page = 52
+    per_page = 50
     sort = request.GET.get("sort", "title")
     order = request.GET.get("order", "asc")
     view = request.GET.get("view", "grid")
+    query = request.GET.get("q", "").strip()
     books_query = Book.objects.all().order_by("id")
+    if query:
+        books_query = books_query.filter(title__icontains=query) | books_query.filter(
+            authors__icontains=query
+        )
+        books_query = books_query.distinct()
 
-    # Create paginator
+    # Pagination
     paginator = Paginator(books_query, per_page)
     page_obj = paginator.get_page(page)
+    page_books = list(page_obj.object_list)
 
-    # TODO: Unexpected behavior when sorting, it is sorting only the page items
-    books = list(page_obj.object_list)
+    # Search BST
+    if query:
+        books = BST.search_in_books(page_books, query)
+    else:
+        books = page_books
+
     sorted_books = MergeSort.sort_books(books, sort, ascending=(order == "asc"))
 
     context = {
@@ -31,8 +43,8 @@ def search(request):
         "current_sort": sort,
         "current_order": order,
         "view": view,
+        "request": request,
     }
-
     return render(request, "search.html", context)
 
 
