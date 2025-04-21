@@ -8,4 +8,5 @@ urlpatterns = [
     path("book/<str:book_id>/", views.book_details, name="book_details"),
     path("login/", views.login, name="login"),
     path("sign-up/", views.signup, name="signup"),
+    path("autocomplete/", views.autocomplete, name="autocomplete"),
 ]
