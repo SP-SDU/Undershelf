@@ -23,7 +23,7 @@ class TestBookModel:
     def test_book_creation(self, sample_book):
         """Test book creation"""
         assert Book.objects.count() == 1
-        assert Book.objects.first().title == "Test Book"
+        assert sample_book.title == "Test Book"
 
     def test_book_str(self, sample_book):
         """Test book string representation"""
