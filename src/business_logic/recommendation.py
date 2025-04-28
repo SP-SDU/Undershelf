@@ -3,9 +3,8 @@ import pandas as pd
 
 # Content based recommender proof of concept 2
 
-merged_fp = 'merged_dataframe.csv' 
+merged_fp = 'processed_books.csv' 
 merged_df= pd.read_csv(merged_fp, index_col="User_id")
-merged_df=merged_df.dropna()
 
 # print(len(merged_df.index.unique()))
 
@@ -53,7 +52,7 @@ booklistMatch = titleindex_df[booklistMatch]
 candidateMtrx = booklistMatch
 
 candidateMtrx = encode_and_bind(candidateMtrx, "categories")
-candidateMtrx = candidateMtrx.drop(['Id', 'review/score', 'description', 'authors', 'image', 'publisher', 'publishedDate', 'ratingsCount'], axis=1)
+candidateMtrx = candidateMtrx.drop(['Id', 'review/score', 'description', 'authors', 'image', 'publisher', 'publishedDate', 'processed_Title', 'processed_description',  'ratingsCount'], axis=1)
 
 candidateMtrx = candidateMtrx.to_numpy(dtype=int)
 weightedCnddtGnrMtrx = np.multiply(interestGnrVctr,candidateMtrx)           
