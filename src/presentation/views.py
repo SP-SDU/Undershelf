@@ -65,7 +65,9 @@ def autocomplete(request):
 
 def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
-    return render(request, "book_details.html", {"book": book})
+    reviews = book.reviews.all()
+
+    return render(request, "book_details.html", {"book": book, "reviews": reviews})
 
 
 def login(request):
