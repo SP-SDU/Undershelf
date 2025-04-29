@@ -1,9 +1,15 @@
+# Use importlib to import module with hyphen in name
+import importlib
+
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 
 from business_logic.bst import BST
 from business_logic.merge_sort import MergeSort
+
+top_k_module = importlib.import_module("business_logic.top-k")
+BookRanker = top_k_module.BookRanker
 from data_access.models import Book
 
 
@@ -68,6 +74,14 @@ def book_details(request, book_id):
     reviews = book.reviews.all()
 
     return render(request, "book_details.html", {"book": book, "reviews": reviews})
+
+
+def top_books(request):
+    k = int(request.GET.get("k", 10))
+    top_rated_books = BookRanker.get_top_k(k)
+
+    context = {"top_books": top_rated_books, "k_value": k, "title": f"Top {k} Books"}
+    return render(request, "top_books.html", context)
 
 
 def login(request):
