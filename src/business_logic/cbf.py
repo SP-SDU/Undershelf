@@ -12,12 +12,6 @@ from data_access.models import Review
 class BookRecommender:
         @staticmethod
 
-        # Encode a feature into binary categorization
-        def encode_and_bind(original_dataframe, feature_to_encode):
-            dummies = pd.get_dummies(original_dataframe[[feature_to_encode]])
-            res = pd.concat([original_dataframe, dummies], axis=1)
-            res = res.drop([feature_to_encode], axis=1)
-            return(res) 
 
 
         def get_cbf_list(userid, n_recommendations=10):
@@ -26,44 +20,69 @@ class BookRecommender:
             # DO put Django models reference instead of pandas dataframe
             merged_df= pd.read_csv(merged_fp, index_col="User_id")
 
+            # rng = np.random.default_rng(None)
+            # indexRandom = rng.integers(low=0, high=len(merged_df.index), size=1)
+            # indexRandom = indexRandom[0]
+            # userid = merged_df.iloc[indexRandom]
             # userid = userid.name
-            userid = Review.user_id
+            
+            userid = Review.user_id # Originally this was the user id sttring or the rng result
 
-            userCtg = merged_df.loc[[Review.user_id],["categories"]]
+            user_categories = merged_df.loc[[Review.user_id],["categories"]]
+            categories_len = len(user_categories["categories"].unique())
+            
+            if  categories_len ==  1:
+                rng = np.random.default_rng(None)
+                index_random = rng.integers(low=0, high=len(merged_df.index), size=1)
+                index_random = index_random[0]
+                userid = merged_df.iloc[index_random]
+                userid = userid.name
+                user_categories = merged_df.loc[[userid],["categories"]]
+                categories_len = len(user_categories["categories"].unique())
 
             # inputUsrVctr is a list with the review score of the user
-            inputUsrVctr = merged_df.loc[[userid],["review/score"]].to_numpy() 
-            userGnrMtrx = merged_df.loc[[userid],["categories"]]
+            input_user_vector = merged_df.loc[[userid],["review/score"]].to_numpy() 
+            user_genre_matrix = merged_df.loc[[userid],["categories"]]
+
+            
+            # Encode a feature into binary categorization
+
+            def encode_and_bind(original_dataframe, feature_to_encode):
+                dummies = pd.get_dummies(original_dataframe[[feature_to_encode]])
+                res = pd.concat([original_dataframe, dummies], axis=1)
+                res = res.drop([feature_to_encode], axis=1)
+                return(res) 
+
 
             # encode genres of the user 
-            userGnrMtrx = encode_and_bind(userGnrMtrx, 'categories')
-            userGnrMtrx = userGnrMtrx.to_numpy(dtype=int)
+            user_genre_matrix = encode_and_bind(user_genre_matrix, 'categories')
+            user_genre_matrix = user_genre_matrix.to_numpy(dtype=int)
 
             # weight the encode and normalize it into a weight vector
-            weightedGnrMtrx = np.multiply(inputUsrVctr,userGnrMtrx)  
-            interestGnrVctr = weightedGnrMtrx.sum(axis=0)  
-            interestGnrVctr = interestGnrVctr/np.linalg.norm(interestGnrVctr)
+            weighted_genre_matrix = np.multiply(input_user_vector,user_genre_matrix)  
+            interest_genre_vector = weighted_genre_matrix.sum(axis=0)  
+            interest_genre_vector = interest_genre_vector/np.linalg.norm(interest_genre_vector)
 
             # change pandas base index tobe the title 
             titleindex_df = merged_df.set_index('Title')
 
             # Candidate selection
-            booklistMatch = titleindex_df['categories'].isin(userCtg.loc[:,'categories'])
-            booklistMatch = titleindex_df[booklistMatch]
-            candidateMtrx = booklistMatch
+            booklist_match = titleindex_df['categories'].isin(user_categories.loc[:,'categories'])
+            booklist_match = titleindex_df[booklist_match]
+            candidate_matrix = booklist_match
 
-            candidateMtrx = encode_and_bind(candidateMtrx, "categories")
-            candidateMtrx = candidateMtrx.drop(['Id', 'review/score', 'description', 'authors', 'image', 'publisher', 'publishedDate', 'processed_Title', 'processed_description',  'ratingsCount'], axis=1)
+            candidate_matrix = encode_and_bind(candidate_matrix, "categories")
+            candidate_matrix = candidate_matrix.drop(['Id', 'review/score', 'description', 'authors', 'image', 'publisher', 'publishedDate', 'processed_Title', 'processed_description',  'ratingsCount'], axis=1)
 
             # Result calculation
-            candidateMtrx = candidateMtrx.to_numpy(dtype=int)
-            weightedCnddtGnrMtrx = np.multiply(interestGnrVctr,candidateMtrx)           
-            weightedAvrg = weightedCnddtGnrMtrx.sum(axis=1)
+            candidate_matrix = candidate_matrix.to_numpy(dtype=int)
+            weighted_candidate_genre_matrix = np.multiply(interest_genre_vector,candidate_matrix)           
+            weighted_vrg = weighted_candidate_genre_matrix.sum(axis=1)
 
-            booklistMatch.insert(0, "result", weightedAvrg)
-            booklistMatch = booklistMatch[~booklistMatch.index.duplicated(keep='first')]
-            booklistMatch = booklistMatch.sort_values(by= ['result'], ascending=False, kind="mergesort")
-            result = booklistMatch.result[:n_recommendations]
+            booklist_match.insert(0, "result", weighted_vrg)
+            booklist_match = booklist_match[~booklist_match.index.duplicated(keep='first')]
+            booklist_match = booklist_match.sort_values(by= ['result'], ascending=False, kind="mergesort")
+            result = booklist_match.result[:n_recommendations]
 
             return result
 
