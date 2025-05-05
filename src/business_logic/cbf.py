@@ -8,9 +8,9 @@ class BookRecommender:
         def get_cbf_list(userid, n_recommendations=10):
             # Read dataframe to use pandas
             merged_fp = 'processed_books.csv' 
-            # DO put Django models reference instead of pandas dataframe
             merged_df= pd.read_csv(merged_fp, index_col="User_id")
 
+            # decapricated. Used to pick a random user id from the dataframe
             # rng = np.random.default_rng(None)
             # indexRandom = rng.integers(low=0, high=len(merged_df.index), size=1)
             # indexRandom = indexRandom[0]
