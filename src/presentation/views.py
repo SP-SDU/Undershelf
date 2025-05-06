@@ -13,10 +13,17 @@ from data_access.models import Book
 def index(request):
     # Fetch top 10 books using the existing BookRanker
     top_10_books = BookRanker.get_top_k(10)
-    # Debug print
+    # Debug print - inspect the actual data
     print(f"DEBUG: Fetched {len(top_10_books)} top books for index page.")
+    for book_dict in top_10_books:  # Use book_dict to avoid confusion
+        # Debug print - inspect the actual data using dictionary keys
+        print(
+            f"DEBUG: Book ID: {book_dict.get('id')}, Title: {book_dict.get('title')}, Authors: {book_dict.get('authors')}"
+        )
     context = {
-        "top_books": top_10_books,
+        "top_books": top_10_books,  # Pass the list of dictionaries to the template
+        "user_is_authenticated": request.user.is_authenticated,  # Pass authentication status
+        "current_user": request.user,  # Pass the current user object
     }
     return render(request, "index.html", context)
 
