@@ -1,19 +1,4 @@
-**Table of Contents**
-
-1. [Project Title](#project-title)
-2. [Introduction](#introduction)
-3. [Goal of the Project](#goal-of-the-project)
-4. [Application Use Case](#application-use-case)
-5. [Minimum Requirements](#minimum-requirements)
-6. [Advanced Requirements](#advanced-requirements)
-7. [Suggested Tools and Resources](#suggested-tools-and-resources)
-8. [Project Deliverables](#project-deliverables)
-
----
-
-## Project Title
-
-**Efficient Search and Recommendation System for Books**
+# Project Title: Efficient Search and Recommendation System for Books
 
 ## Introduction
 
