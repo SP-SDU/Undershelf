@@ -11,7 +11,14 @@ from data_access.models import Book
 
 
 def index(request):
-    return render(request, "index.html")
+    # Fetch top 10 books using the existing BookRanker
+    top_10_books = BookRanker.get_top_k(10)
+    # Debug print
+    print(f"DEBUG: Fetched {len(top_10_books)} top books for index page.")
+    context = {
+        "top_books": top_10_books,
+    }
+    return render(request, "index.html", context)
 
 
 def search(request):
@@ -23,8 +30,9 @@ def search(request):
     query = request.GET.get("q", "").strip()
     books_query = Book.objects.all().order_by("id")
     if query:
-        books_query = books_query.filter(title__icontains=query) | books_query.filter(
-            authors__icontains=query
+        books_query = (
+            books_query.filter(title__icontains=query) |
+            books_query.filter(authors__icontains=query)
         )
         books_query = books_query.distinct()
 
@@ -39,7 +47,9 @@ def search(request):
     else:
         books = page_books
 
-    sorted_books = MergeSort.sort_books(books, sort, ascending=(order == "asc"))
+    sorted_books = MergeSort.sort_books(
+        books, sort, ascending=(order == "asc")
+    )
 
     context = {
         "books": sorted_books,
@@ -58,11 +68,14 @@ def autocomplete(request):
     if not prefix:
         return JsonResponse({"suggestions": []})
     # Custom BST is super slow and is required for search.
-    # This uses indexed DB query (O(log n + k)) since it is not required for autocomplete.
-    books = Book.objects.filter(title__istartswith=prefix).order_by("title")[
-        :max_results
+    # This uses indexed DB query (O(log n + k)) since it is not required for
+    # autocomplete.
+    books = Book.objects.filter(
+        title__istartswith=prefix
+    ).order_by("title")[:max_results]
+    data = [
+        {"id": b.id, "title": b.title, "authors": b.authors} for b in books
     ]
-    data = [{"id": b.id, "title": b.title, "authors": b.authors} for b in books]
     return JsonResponse({"suggestions": data})
 
 
@@ -70,14 +83,20 @@ def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     reviews = book.reviews.all()
 
-    return render(request, "book_details.html", {"book": book, "reviews": reviews})
+    return render(
+        request, "book_details.html", {"book": book, "reviews": reviews}
+    )
 
 
 def top_books(request):
     k = int(request.GET.get("k", 10))
     top_rated_books = BookRanker.get_top_k(k)
 
-    context = {"top_books": top_rated_books, "k_value": k, "title": f"Top {k} Books"}
+    context = {
+        "top_books": top_rated_books,
+        "k_value": k,
+        "title": f"Top {k} Books"
+    }
     return render(request, "top_books.html", context)
 
 
