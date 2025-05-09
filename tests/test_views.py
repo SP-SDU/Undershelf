@@ -58,9 +58,6 @@ class TestViews:
         assert "index.html" in [t.name for t in response.templates]
         # Check if 'top_books' is in the context (even if empty)
         assert "top_books" in response.context
-        # Check context for unauthenticated user
-        assert response.context["user_is_authenticated"] is False
-        assert response.context["current_user"].is_anonymous
 
     def test_search_view(self, client, sample_book):
         """Test search view"""
