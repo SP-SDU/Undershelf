@@ -54,7 +54,21 @@
 <div class="max-w-7xl mx-auto px-6 py-12"> <!-- Added container -->
     <!-- Section for Top Books -->
     <div class="mt-12"> <!-- Adjusted margin -->
-        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Top Rated Books</h2>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Top Rated Books</h2>
+            <div class="mt-0">
+                <form method="get" action="{% url 'index' %}" class="flex items-center space-x-4">
+                    <label for="k-value" class="font-medium text-gray-700">Show top:</label>
+                    <select id="k-value" name="k" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" onchange="this.form.submit()">
+                        <option value="5" {% if k_value == 5 %}selected{% endif %}>5 books</option>
+                        <option value="10" {% if k_value == 10 %}selected{% endif %}>10 books</option>
+                        <option value="25" {% if k_value == 25 %}selected{% endif %}>25 books</option>
+                        <option value="50" {% if k_value == 50 %}selected{% endif %}>50 books</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        
         {% if top_books %}
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {% for book in top_books %}
@@ -70,13 +84,22 @@
                 </a>
                 <div class="p-4">
                     <h3 class="text-lg font-semibold mb-1 truncate" title="{{ book.title }}">
-                        <a href="{% url 'book_details' book_id=book.id %}" class="hover:text-blue-600">{{ book.title
-                            }}</a>
+                        <a href="{% url 'book_details' book_id=book.id %}" class="hover:text-blue-600">{{ book.title }}</a>
                     </h3>
                     <p class="text-sm text-gray-600 truncate" title="{{ book.authors|default:'Unknown Author' }}">
                         {{ book.authors|default:"Unknown Author" }}
                     </p>
-                    <!-- Add more details like rating if available -->
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center">
+                            {% if book.rating %}
+                            <span class="text-yellow-400">★</span>
+                            <span class="ml-1 text-sm text-gray-700">{{ book.rating|floatformat:1 }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            Score: {{ book.score|floatformat:2 }}
+                        </div>
+                    </div>
                 </div>
             </div>
             {% endfor %}
