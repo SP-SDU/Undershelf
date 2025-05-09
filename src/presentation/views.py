@@ -13,20 +13,11 @@ from data_access.models import Book
 
 @cache_page(60 * 15)
 def index(request):
-    # Get k parameter from request, default to 10 if not provided
-    k = int(request.GET.get("k", 10))
-    # Fetch top k books using the existing BookRanker
-    top_books = BookRanker.get_top_k(k)
+    k = int(request.GET.get("k", 10))  # Get k parameter, default to 10
+    top_books = BookRanker.get_top_k(k)  # Fetch top k books
 
-    print(f"DEBUG: Fetched {len(top_books)} top books for index page.")
-    for book_dict in top_books:  # Use book_dict to avoid confusion
-        print(
-            f"DEBUG: Book ID: {book_dict.get('id')}, Title: {book_dict.get('title')}, Authors: {book_dict.get('authors')}"
-        )
     context = {
         "top_books": top_books,
-        "user_is_authenticated": request.user.is_authenticated,
-        "current_user": request.user,
         "k_value": k,
         "title": f"Top {k} Books",
     }

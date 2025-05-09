@@ -62,25 +62,6 @@ class TestViews:
         assert response.context["user_is_authenticated"] is False
         assert response.context["current_user"].is_anonymous
 
-    def test_index_view_authenticated(self, client, django_user_model):
-        """Test index view for authenticated user"""
-        # Create and log in a user
-        username = "testuser"
-        password = "password"
-        user = django_user_model.objects.create_user(
-            username=username, password=password
-        )
-        client.login(username=username, password=password)
-
-        url = reverse("index")
-        response = client.get(url)
-        assert response.status_code == 200
-        assert "index.html" in [t.name for t in response.templates]
-        assert "top_books" in response.context
-        # Check context for authenticated user
-        assert response.context["user_is_authenticated"] is True
-        assert response.context["current_user"] == user
-
     def test_search_view(self, client, sample_book):
         """Test search view"""
         url = reverse("search")
