@@ -51,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.gzip.GZipMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -86,6 +87,20 @@ DATABASES = {
     }
 }
 
+
+# Caching configuration
+# https://docs.djangoproject.com/en/5.2/topics/cache/
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "undershelf-cache",
+        "TIMEOUT": 60 * 15,
+        "OPTIONS": {
+            "MAX_ENTRIES": 1000,
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
