@@ -76,10 +76,11 @@ class BookRecommender:
                 booklist_match = booklist_match[~booklist_match.index.duplicated(keep='first')]
                 booklist_match = booklist_match.sort_values(by= ['result'], ascending=False, kind="mergesort")
                 result = booklist_match.result[:n_recommendations]
-                print(result)
+            return result
 
-        
-        get_cbf_list("A2F6NONFUDB6UK")
+    
+        print(get_cbf_list("A2F6NONFUDB6UK").to_json(orient="table"))
+
 
 
 
