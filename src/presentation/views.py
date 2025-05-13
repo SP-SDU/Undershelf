@@ -1,11 +1,11 @@
 # Use importlib to import module with hyphen in name
 
 from django.core.paginator import Paginator
-from django.db.models import Avg, Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import cache_page
 
+from business_logic.bfs import GraphRecommender
 from business_logic.bst import BST
 from business_logic.merge_sort import MergeSort
 from business_logic.top_k import BookRanker
@@ -90,45 +90,15 @@ def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     reviews = book.reviews.all()
 
-    # --- Recommendation logic start ---
-    # Extract the set of category tokens (split on comma) and author names
-    cats = set(
-        c.strip().lower() for c in (book.categories or "").split(",") if c.strip()
+    # get up to 8 recommendations
+    recommended_books = GraphRecommender.get_recommendations(
+        book_id, max_depth=2, max_results=8
     )
-    authors = set(
-        a.strip().lower() for a in (book.authors or "").split(",") if a.strip()
-    )
-
-    # Build a Q object that matches any shared category or author
-    q_filters = Q()
-    for cat in cats:
-        q_filters |= Q(categories__icontains=cat)
-    for auth in authors:
-        q_filters |= Q(authors__icontains=auth)
-
-    # Fetch candidates, exclude current book, annotate avg_rating & review_count
-    recommended_qs = (
-        Book.objects.filter(q_filters)
-        .exclude(pk=book.pk)
-        .annotate(
-            avg_rating=Avg("reviews__review_score"),
-            review_count=Count("reviews"),
-        )
-        .filter(review_count__gt=0)  # only books with ≥1 review
-        .order_by("-avg_rating", "-review_count")[:8]  # limit to 8 recommendations
-    )
-    # Turn into a plain list so template's .count and .avg_rating work
-    recommended_books = list(recommended_qs)
-    # --- Recommendation logic end ---
 
     return render(
         request,
         "book_details.html",
-        {
-            "book": book,
-            "reviews": reviews,
-            "recommended_books": recommended_books,
-        },
+        {"book": book, "reviews": reviews, "recommended_books": recommended_books},
     )
 
 
