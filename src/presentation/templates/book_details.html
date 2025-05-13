@@ -52,6 +52,50 @@
             </div>
         </div>
 
+        <!-- Recommendations -->
+        <div class="container mx-auto py-8">
+            <h2 class="text-2xl font-semibold mb-6">You May Also Like</h2>
+        
+            {% if recommended_books %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for rec_book in recommended_books %}
+            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
+                {% if rec_book.reviews.count > 50 %}
+                <div class="badge badge-primary absolute m-3">Bestseller</div>
+                {% endif %}
+                <figure class="px-4 pt-4">
+                <img src="{{ rec_book.image }}" alt="{{ rec_book.title }}" class="rounded-xl object-cover h-48 w-full" />
+                </figure>
+                <div class="card-body">
+                <h3 class="card-title text-lg line-clamp-2">{{ rec_book.title }}</h3>
+                <p class="text-sm text-muted mb-2">by {{ rec_book.authors|default:"Unknown" }}</p>
+        
+                <div class="flex items-center">
+                    {% for i in "12345"|make_list %}
+                    {% if forloop.counter <= rec_book.avg_rating|default:0 %}
+                        <i class="fa-solid fa-star text-yellow-400"></i>
+                    {% elif forloop.counter <= rec_book.avg_rating|add:"0.5"|default:0 %}
+                        <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
+                    {% else %}
+                        <i class="fa-regular fa-star text-yellow-400"></i>
+                    {% endif %}
+                    {% endfor %}
+                    <span class="text-sm text-gray-500 ml-2">({{ rec_book.reviews.count }})</span>
+                </div>
+                </div>
+                <div class="card-actions justify-end p-4">
+                <a href="{% url 'book_details' rec_book.id %}" class="btn btn-primary btn-sm">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info mt-4">
+            No recommendations available for this book.
+            </div>
+            {% endif %}
+        </div>
+
         <!-- Reviews Section -->
         <div class="mt-8 border-t pt-4">
             <h3 class="text-xl font-bold mb-4">Customer Reviews</h3>

@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -143,12 +142,3 @@ STATICFILES_DIRS = [BASE_DIR / "presentation" / "static"]
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Seeding settings
-# Path to the CSV file containing book data
-CSV_FILE_PATH = os.path.join(BASE_DIR, "data_access", "merged_dataframe.csv")
-
-# Admin superuser credentials for auto-creation
-DJANGO_SUPERUSER_USERNAME = "admin"
-DJANGO_SUPERUSER_EMAIL = "admin@undershelf.com"
-DJANGO_SUPERUSER_PASSWORD = "admin"
