@@ -1,59 +1,63 @@
 from collections import defaultdict, deque
-from typing import Dict, Iterable, List
+from typing import List
 
 from data_access.models import Book
 
 
 class GraphRecommender:
-    def __init__(self) -> None:
-        self.connections: Dict[str, Dict[str, float]] = defaultdict(dict)
+    """
+    Graph-based recommender using BFS.
+    Nodes: books; edges: same author or same category.
+    """
 
-    def add_book(self, asin: str) -> None:
-        self.connections.setdefault(asin, {})
+    @staticmethod
+    def get_recommendations(
+        start_book_id: str, max_depth: int = 2, max_results: int = 10
+    ) -> List[Book]:
+        # Build feature maps: author -> books, category -> books
+        author_map = defaultdict(set)
+        category_map = defaultdict(set)
 
-    def add_edge(self, a: str, b: str, weight: float = 1.0) -> None:
-        self.connections[a][b] = max(self.connections[a].get(b, 0), weight)
-        self.connections[b][a] = max(self.connections[b].get(a, 0), weight)
+        all_books = list(Book.objects.only("id", "authors", "categories"))  # O(n)
+        for b in all_books:  # O(n * f)
+            if b.authors:
+                for author in b.authors.split(","):
+                    author_map[author.strip().lower()].add(b.id)
+            if b.categories:
+                for cat in b.categories.split(","):
+                    category_map[cat.strip().lower()].add(b.id)
 
-    def build(self, books: Iterable[Book]) -> None:
-        by_category: Dict[str, List[str]] = defaultdict(list)
-        by_author: Dict[str, List[str]] = defaultdict(list)
+        visited = set([start_book_id])
+        queue = deque([(start_book_id, 0)])
+        recommendations = []
 
-        for book in books:
-            asin = book.id
-            self.add_book(asin)
-            if book.categories:
-                for category in map(str.strip, book.categories.split(",")):
-                    if category:
-                        by_category[category].append(asin)
-            if book.authors:
-                by_author[book.authors].append(asin)
+        while queue and len(recommendations) < max_results:
+            current_id, depth = queue.popleft()
+            if depth >= max_depth:
+                continue
 
-        for items in by_category.values():
-            for i, src in enumerate(items[:-1]):
-                for dst in items[i + 1 :]:
-                    self.add_edge(src, dst, weight=0.5)
+            # neighbors by author
+            b = Book.objects.only("id", "authors", "categories").get(pk=current_id)
+            neighbors = set()
+            if b.authors:
+                for author in b.authors.split(","):
+                    neighbors |= author_map[author.strip().lower()]
+            if b.categories:
+                for cat in b.categories.split(","):
+                    neighbors |= category_map[cat.strip().lower()]
 
-        for items in by_author.values():
-            for i, src in enumerate(items[:-1]):
-                for dst in items[i + 1 :]:
-                    self.add_edge(src, dst, weight=1.0)
+            for nb_id in neighbors:
+                if nb_id not in visited:
+                    visited.add(nb_id)
+                    queue.append((nb_id, depth + 1))
+                    if nb_id != start_book_id:
+                        recommendations.append(nb_id)
+                        if len(recommendations) >= max_results:
+                            break
 
-    def recommend(self, start: str, max_results: int = 5) -> List[str]:
-        if start not in self.connections:
-            return []
-
-        visited = {start}
-        queue = deque([start])
-        results: List[str] = []
-
-        while queue and len(results) < max_results:
-            current = queue.popleft()
-            for neighbor in self.connections[current]:
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append(neighbor)
-                    results.append(neighbor)
-                    if len(results) == max_results:
-                        break
-        return results
+        # Fetch Book instances preserving order
+        books = list(Book.objects.filter(id__in=recommendations))
+        # maintain recommendation order
+        id_to_book = {book.id: book for book in books}
+        ordered = [id_to_book[rid] for rid in recommendations if rid in id_to_book]
+        return ordered
