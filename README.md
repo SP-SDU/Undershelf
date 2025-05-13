@@ -17,6 +17,7 @@
 ## Getting Started 🚀
 
 ### Prerequisites
+
 - Python 3.12 or higher
 - pip (Python package manager)
 - Download [merged_dataframe.csv](https://drive.google.com/file/d/1MVRHs_CwKTBR2Rpakx920f277IcJ0q6X/view) and place it in the `src/data_access` directory.
@@ -24,40 +25,23 @@
 ### Installation
 
 1. Clone the repository:
-   ```
+
+   ```bash
    git clone https://github.com/SP-SDU/Undershelf.git
    cd Undershelf
    ```
 
-2. Create and activate a virtual environment:
-   ```bash
-   # Windows
-   python -m venv .venv
-   .\.venv\Scripts\activate
+### Setup and Running the Application
 
-   # Linux/MacOS
-   python -m venv .venv
-   source .venv/bin/activate
-   ```
+#### Option 1: Using the Terminal
 
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+```bash
+python run.py
+```
 
-### Running the Application (Or debug F5 in VSCode)
+#### Option 2: Using VS Code
 
-1. Ensure virtual environment is activated (you should see `(.venv)` in your terminal)
-
-2. Start the django server:
-   ```
-   python src/manage.py runserver
-   ```
-
-3. Open your browser and navigate to:
-   ```
-   http://localhost:8000
-   ```
+Press `F5` to start debugging (this will set up the project and launch the server)
 
 ### Available Commands 🔧
 
@@ -76,9 +60,11 @@ The following commands are available in addition to those explained above:
 ## Contributing 🤝
 
 1. **Clone** Open [GitHub Desktop](https://desktop.github.com/), go to `File > Clone Repository`, and enter:
+
      ```
      https://github.com/SP-SDU/Undershelf
      ```
+
 2. **Branch**: In GitHub Desktop, switch to `main` and create a new branch (e.g., `add-login-feature`).
 3. **Commit & Push**: Commit changes in GitHub Desktop, then click `Push origin`.
 4. **Pull Request**: Open a pull request on GitHub, choosing `main` as the base branch, and tag a teammate for review.
@@ -92,4 +78,3 @@ Join the [Discord server](https://discord.gg/a2ARm52WwE) for discussions and upd
 ## License 📝
 
 Distributed under the Apache 2.0 License. See [LICENSE](LICENSE) for details.
-
