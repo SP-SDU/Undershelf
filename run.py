@@ -68,27 +68,23 @@ def create_superuser(python_exe):
 
 
 def check_if_data_exists(python_exe):
-    check_script = """
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-import django
-django.setup()
-from data_access.models import Book
-book_count = Book.objects.count()
-print(1 if book_count > 0 else 0)
-"""
+    check_script = (
+        "import os; "
+        "os.environ.setdefault('DJANGO_SETTINGS_MODULE','config.settings'); "
+        "import django; django.setup(); "
+        "from data_access.models import Book; "
+        "print(1 if Book.objects.count()>0 else 0)"
+    )
 
     try:
         result = subprocess.run(
-            f"{python_exe} -c '{check_script}'",
-            shell=True,
+            [python_exe, "-c", check_script],
             capture_output=True,
             text=True,
+            cwd=os.path.join(os.getcwd(), "src"),
         )
 
-        if result.returncode == 0 and result.stdout.strip() == "1":
-            return True
-        return False
+        return result.returncode == 0 and result.stdout.strip() == "1"
     except Exception as e:
         print(f"\033[93mWarning: Could not check database: {e}\033[0m")
         return False
