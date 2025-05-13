@@ -20,7 +20,8 @@
 
 - Python 3.12 or higher
 - pip (Python package manager)
-- Download [merged_dataframe.csv](https://drive.google.com/file/d/1MVRHs_CwKTBR2Rpakx920f277IcJ0q6X/view) and place it in the `src/data_access` directory.
+- ~~Download [merged_dataframe.csv](https://drive.google.com/file/d/1MVRHs_CwKTBR2Rpakx920f277IcJ0q6X/view) and place it in the `src/data_access` directory.~~
+- The dataset is gotten during the setup process.
 
 ### Installation
 

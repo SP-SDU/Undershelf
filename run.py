@@ -2,8 +2,9 @@ import argparse
 import os
 import platform
 import subprocess
-import sys
+import urllib.request
 import venv
+import zipfile
 
 
 def run_command(command, description=None):
@@ -66,25 +67,80 @@ def create_superuser(python_exe):
     )
 
 
-def check_if_data_exists():
+def check_if_data_exists(python_exe):
+    check_script = """
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+import django
+django.setup()
+from data_access.models import Book
+book_count = Book.objects.count()
+print(1 if book_count > 0 else 0)
+"""
+
     try:
-        # Set Python path to include the src directory
-        src_path = os.path.join(os.getcwd(), "src")
-        if src_path not in sys.path:
-            sys.path.insert(0, src_path)
+        result = subprocess.run(
+            f"{python_exe} -c '{check_script}'",
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
 
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-        import django
-
-        django.setup()
-
-        from data_access.models import Book
-
-        book_count = Book.objects.count()
-        return book_count > 0
+        if result.returncode == 0 and result.stdout.strip() == "1":
+            return True
+        return False
     except Exception as e:
         print(f"\033[93mWarning: Could not check database: {e}\033[0m")
         return False
+
+
+def download_or_get_csv():
+    csv_path = os.path.join("src", "data_access", "merged_dataframe.csv")
+
+    if os.path.exists(csv_path):
+        print("\033[92mCSV file found.\033[0m")
+        return csv_path
+
+    print("\033[93mCSV file not found. Downloading...\033[0m")
+    url = "https://drive.usercontent.google.com/download?id=1MVRHs_CwKTBR2Rpakx920f277IcJ0q6X&authuser=0&confirm=t"
+    zip_path = os.path.join("src", "data_access", "merged_dataframe.zip")
+
+    try:
+        os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+
+        # Download the ZIP file
+        print("\033[92mDownloading ZIP file...\033[0m")
+        with urllib.request.urlopen(url) as response:
+            if response.getcode() != 200:
+                raise Exception(f"HTTP error: {response.getcode()}")
+
+            with open(zip_path, "wb") as file:
+                chunk_size = 8192
+                while True:
+                    chunk = response.read(chunk_size)
+                    if not chunk:
+                        break
+                    file.write(chunk)
+
+        # Extract the ZIP file
+        print("\033[92mExtracting ZIP file...\033[0m")
+        data_access_dir = os.path.join("src", "data_access")
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            zip_ref.extractall(data_access_dir)
+
+        # Remove the ZIP file after extraction
+        os.remove(zip_path)
+
+        if os.path.exists(csv_path):
+            print("\033[92mCSV file extracted successfully.\033[0m")
+            return csv_path
+        else:
+            print("\033[91mNo CSV file found in the extracted ZIP.\033[0m")
+            return None
+
+    except Exception as e:
+        print(f"\033[91mError processing file: {e}\033[0m")
+        return None
 
 
 def main():
@@ -104,9 +160,13 @@ def main():
     create_superuser(python_exe)
 
     print("\033[92mChecking if data needs to be imported...\033[0m")
-    if not check_if_data_exists():
+    if not check_if_data_exists(python_exe):
+        csv_path = download_or_get_csv()
+        if not csv_path:
+            print("\033[91mFailed to get CSV file. Exiting.\033[0m")
+            exit(1)
         run_command(
-            f"{python_exe} src/manage.py import_data src/data_access/merged_dataframe.csv",
+            f"{python_exe} src/manage.py import_data {csv_path}",
             "Importing data from CSV",
         )
     else:
