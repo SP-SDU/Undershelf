@@ -33,15 +33,11 @@
 
 ### Setup and Running the Application
 
-#### Option 1: Using the Terminal
+Press `F5` in VS Code to start debugging or run it in terminal:
 
 ```bash
 python run.py
 ```
-
-#### Option 2: Using VS Code
-
-Press `F5` to start debugging (this will set up the project and launch the server)
 
 ### Available Commands 🔧
 
