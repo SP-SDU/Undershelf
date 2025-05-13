@@ -29,14 +29,12 @@ def run_command(command, description=None):
     return True
 
 
-def activate_venv():
+def get_venv_python_path():
     if platform.system() == "Windows":
-        venv_path = os.path.join(os.getcwd(), ".venv", "Scripts")
+        python_exe = os.path.join(os.getcwd(), ".venv", "Scripts", "python.exe")
     else:
-        venv_path = os.path.join(os.getcwd(), ".venv", "bin")
-
-    os.environ["PATH"] = venv_path + os.pathsep + os.environ["PATH"]
-    os.environ["VIRTUAL_ENV"] = os.path.join(os.getcwd(), ".venv")
+        python_exe = os.path.join(os.getcwd(), ".venv", "bin", "python")
+    return python_exe
 
 
 def create_venv_if_not_exists():
@@ -56,14 +54,16 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def create_superuser():
+def create_superuser(python_exe):
     print("\033[92mCreating superuser if needed...\033[0m")
 
     os.environ.setdefault("DJANGO_SUPERUSER_USERNAME", "root")
     os.environ.setdefault("DJANGO_SUPERUSER_PASSWORD", "root")
     os.environ.setdefault("DJANGO_SUPERUSER_EMAIL", "root@undershelf.com")
 
-    run_command("python src/manage.py createsuperuser --noinput", "Creating superuser")
+    run_command(
+        f"{python_exe} src/manage.py createsuperuser --noinput", "Creating superuser"
+    )
 
 
 def check_if_data_exists():
@@ -89,18 +89,24 @@ def check_if_data_exists():
 
 def main():
     create_venv_if_not_exists()
-    activate_venv()
+    python_exe = get_venv_python_path()
 
-    run_command("pip install -r requirements.txt", "Installing requirements")
-    run_command("python src/manage.py makemigrations", "Making migrations")
-    run_command("python src/manage.py migrate", "Running migrations")
+    run_command(
+        f"{python_exe} -m pip install -r requirements.txt",
+        "Installing requirements",
+    )
+    run_command(
+        f"{python_exe} src/manage.py makemigrations",
+        "Making migrations",
+    )
+    run_command(f"{python_exe} src/manage.py migrate", "Running migrations")
 
-    create_superuser()
+    create_superuser(python_exe)
 
     print("\033[92mChecking if data needs to be imported...\033[0m")
     if not check_if_data_exists():
         run_command(
-            "python src/manage.py import_data src/data_access/merged_dataframe.csv",
+            f"{python_exe} src/manage.py import_data src/data_access/merged_dataframe.csv",
             "Importing data from CSV",
         )
     else:
@@ -112,7 +118,7 @@ def main():
     else:
         print("\033[92mStarting development server...\033[0m")
         print("\033[93mPress Ctrl+C to stop the server\033[0m")
-        subprocess.call(["python", "src/manage.py", "runserver"])
+        subprocess.call([python_exe, "src/manage.py", "runserver"])
 
 
 if __name__ == "__main__":
