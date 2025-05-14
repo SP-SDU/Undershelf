@@ -5,8 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import cache_page
 
-from business_logic.bfs import GraphRecommender
 from business_logic.bst import BST
+from business_logic.cbf import BookRecommender
 from business_logic.merge_sort import MergeSort
 from business_logic.top_k import BookRanker
 from data_access.models import Book
@@ -83,11 +83,10 @@ def autocomplete(request):
 def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     reviews = book.reviews.all()
+    review = book.reviews.first()
+    userid = review.user_id if review else None
 
-    # get up to 8 recommendations
-    recommended_books = GraphRecommender.get_recommendations(
-        book_id, max_depth=2, max_results=8
-    )
+    recommended_books = BookRecommender.get_cbf_list(userid, n_recommendations=8)
 
     return render(
         request,
