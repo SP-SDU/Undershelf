@@ -1,0 +1,144 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Settings - Undershelf Admin{% endblock %}
+
+{% block header_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">Manage your Undershelf system configurations</h1>
+    <button type="submit" form="settings-form" class="btn btn-primary">
+        Save Changes
+    </button>
+</div>
+
+<form id="settings-form" method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- General Settings Panel -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center mb-4">
+            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">General Settings</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="mb-4">
+                <label for="system_name" class="block text-sm font-medium text-gray-700 mb-1">System Name</label>
+                <input type="text" id="system_name" name="system_name" value="{{ settings.system_name|default:'Undershelf' }}" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="language" class="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                <select id="language" name="language" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
+                    <option value="es" {% if settings.language == 'es' %}selected{% endif %}>Español</option>
+                    <option value="fr" {% if settings.language == 'fr' %}selected{% endif %}>Français</option>
+                    <option value="de" {% if settings.language == 'de' %}selected{% endif %}>Deutsch</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="timezone" class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                <select id="timezone" name="timezone" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="UTC" {% if settings.timezone == 'UTC' %}selected{% endif %}>UTC (00:00)</option>
+                    <option value="America/New_York" {% if settings.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time (UTC-05:00)</option>
+                    <option value="America/Chicago" {% if settings.timezone == 'America/Chicago' %}selected{% endif %}>Central Time (UTC-06:00)</option>
+                    <option value="America/Denver" {% if settings.timezone == 'America/Denver' %}selected{% endif %}>Mountain Time (UTC-07:00)</option>
+                    <option value="America/Los_Angeles" {% if settings.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (UTC-08:00)</option>
+                    <option value="Europe/London" {% if settings.timezone == 'Europe/London' %}selected{% endif %}>London (UTC+00:00)</option>
+                    <option value="Europe/Paris" {% if settings.timezone == 'Europe/Paris' %}selected{% endif %}>Paris (UTC+01:00)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Settings Panel -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center mb-4">
+            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Security Settings</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="mb-4">
+                <label for="min_password_length" class="block text-sm font-medium text-gray-700 mb-1">Minimum Password Length</label>
+                <select id="min_password_length" name="min_password_length" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="6" {% if settings.min_password_length == 6 %}selected{% endif %}>6 characters</option>
+                    <option value="8" {% if settings.min_password_length == 8 %}selected{% endif %}>8 characters</option>
+                    <option value="10" {% if settings.min_password_length == 10 %}selected{% endif %}>10 characters</option>
+                    <option value="12" {% if settings.min_password_length == 12 %}selected{% endif %}>12 characters</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Password Requirements</label>
+            <div class="space-y-2">
+                <div class="flex items-center">
+                    <input type="checkbox" id="require_uppercase" name="require_uppercase" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.require_uppercase %}checked{% endif %}>
+                    <label for="require_uppercase" class="ml-2 block text-sm text-gray-700">Require uppercase letters</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="require_numbers" name="require_numbers" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.require_numbers %}checked{% endif %}>
+                    <label for="require_numbers" class="ml-2 block text-sm text-gray-700">Require numbers</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="require_special" name="require_special" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.require_special %}checked{% endif %}>
+                    <label for="require_special" class="ml-2 block text-sm text-gray-700">Require special characters</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <div class="flex items-center">
+                <input type="checkbox" id="two_factor_auth" name="two_factor_auth" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.two_factor_auth %}checked{% endif %}>
+                <label for="two_factor_auth" class="ml-2 block text-sm text-gray-700">Enable for all admin users</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Settings Panel -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center mb-4">
+            <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-900">Notification Settings</h2>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <label for="new_user_notifications" class="block text-sm text-gray-700">New user registrations</label>
+                <input type="checkbox" id="new_user_notifications" name="new_user_notifications" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.new_user_notifications %}checked{% endif %}>
+            </div>
+            <div class="flex items-center justify-between">
+                <label for="new_book_notifications" class="block text-sm text-gray-700">New book submissions</label>
+                <input type="checkbox" id="new_book_notifications" name="new_book_notifications" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.new_book_notifications %}checked{% endif %}>
+            </div>
+            <div class="flex items-center justify-between">
+                <label for="system_alerts" class="block text-sm text-gray-700">System alerts</label>
+                <input type="checkbox" id="system_alerts" name="system_alerts" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.system_alerts %}checked{% endif %}>
+            </div>
+            <div class="flex items-center justify-between">
+                <label for="review_notifications" class="block text-sm text-gray-700">Review notifications</label>
+                <input type="checkbox" id="review_notifications" name="review_notifications" class="form-checkbox h-4 w-4 text-blue-600" {% if settings.review_notifications %}checked{% endif %}>
+            </div>
+
+            <div class="mt-4">
+                <label for="email_digest" class="block text-sm font-medium text-gray-700 mb-1">Email Digest Frequency</label>
+                <select id="email_digest" name="email_digest" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="immediately" {% if settings.email_digest == 'immediately' %}selected{% endif %}>Immediately</option>
+                    <option value="daily" {% if settings.email_digest == 'daily' %}selected{% endif %}>Daily</option>
+                    <option value="weekly" {% if settings.email_digest == 'weekly' %}selected{% endif %}>Weekly</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

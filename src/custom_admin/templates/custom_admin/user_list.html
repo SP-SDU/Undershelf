@@ -1,0 +1,270 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}User Management - Undershelf Admin{% endblock %}
+
+{% block header_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">Manage and monitor user accounts</h1>
+    <div>
+        <a href="{% url 'custom_admin:user_add' %}" class="btn btn-sm btn-primary">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add New User
+        </a>
+        <a href="{% url 'custom_admin:generate_report' type='users' %}" class="btn btn-sm btn-outline">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Generate Report
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter Bar -->
+<div class="bg-white shadow-sm p-4 rounded-lg mb-6">
+    <div class="flex flex-wrap items-center justify-between">
+        <div class="w-full md:w-64 mb-4 md:mb-0">
+            <div class="relative">
+                <input type="text" id="search-users" placeholder="Search users..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-wrap items-center space-x-2">
+            <div>
+                <select id="role-filter" class="border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="reader">Reader</option>
+                </select>
+            </div>
+            <div>
+                <select id="status-filter" class="border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- User List -->
+    <div class="lg:col-span-3">
+        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Info</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for user in users %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    {% if user.get_avatar_url %}
+                                    <img class="h-10 w-10 rounded-full" src="{{ user.get_avatar_url }}" alt="{{ user.get_full_name }}">
+                                    {% else %}
+                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <span class="text-blue-600 font-medium">{{ user.username|first|upper }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.username }}</div>
+                                    <div class="text-sm text-gray-500">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        {% if user.is_superuser or user.is_staff %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {% if user.is_superuser %}Admin{% elif user.is_staff %}Staff{% else %}Reader{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="flex items-center">
+                                <span class="h-2.5 w-2.5 rounded-full {% if user.is_active %}bg-green-400{% else %}bg-gray-400{% endif %} mr-2"></span>
+                                <span class="text-sm text-gray-700">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ user.last_login|date:"Y-m-d H:i" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <div class="flex justify-center space-x-2">
+                                <a href="{% url 'custom_admin:user_edit' user.id %}" class="text-blue-600 hover:text-blue-900">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
+                                </a>
+                                {% if not user.is_superuser or request.user.is_superuser %}
+                                <a href="{% url 'custom_admin:user_toggle_status' user.id %}" class="{% if user.is_active %}text-yellow-600 hover:text-yellow-900{% else %}text-green-600 hover:text-green-900{% endif %}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        {% if user.is_active %}
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                        {% else %}
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        {% endif %}
+                                    </svg>
+                                </a>
+                                {% endif %}
+                                {% if not user.is_superuser or request.user.is_superuser %}
+                                <a href="{% url 'custom_admin:user_delete' user.id %}" class="text-red-600 hover:text-red-900">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-6 text-center text-gray-500">
+                            No users found. <a href="{% url 'custom_admin:user_add' %}" class="text-blue-600 font-medium">Add a new user</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-6 flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} users
+            </div>
+            <div class="join">
+                {% if page_obj.has_previous %}
+                <a href="?page=1" class="join-item btn btn-sm">«</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn btn-sm">‹</a>
+                {% endif %}
+                
+                {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <a class="join-item btn btn-sm btn-active">{{ i }}</a>
+                    {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                        <a href="?page={{ i }}" class="join-item btn btn-sm">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="join-item btn btn-sm">›</a>
+                <a href="?page={{ paginator.num_pages }}" class="join-item btn btn-sm">»</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- User Statistics -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">User Statistics</h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600 text-sm">Total Users</span>
+                        <span class="text-blue-600 font-semibold">{{ total_users }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                        <div class="bg-blue-600 h-1.5 rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600 text-sm">Active Users</span>
+                        <span class="text-blue-600 font-semibold">{{ active_users }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                        <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ active_percentage }}%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600 text-sm">New Today</span>
+                        <span class="text-blue-600 font-semibold">{{ new_users }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                        <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ new_percentage }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-gray-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600 text-sm">Admin Users</span>
+                    <span class="text-sm font-semibold">{{ admin_count }}</span>
+                </div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-600 text-sm">Regular Users</span>
+                    <span class="text-sm font-semibold">{{ reader_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-users');
+        const roleFilter = document.getElementById('role-filter');
+        const statusFilter = document.getElementById('status-filter');
+        
+        function applyFilters() {
+            const searchTerm = searchInput.value.trim();
+            const role = roleFilter.value;
+            const status = statusFilter.value;
+            
+            // Build query string
+            const params = new URLSearchParams(window.location.search);
+            
+            if (searchTerm) params.set('q', searchTerm);
+            else params.delete('q');
+            
+            if (role) params.set('role', role);
+            else params.delete('role');
+            
+            if (status) params.set('status', status);
+            else params.delete('status');
+            
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+        
+        // Add event listeners with debounce for search
+        let debounceTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(applyFilters, 500);
+        });
+        
+        roleFilter.addEventListener('change', applyFilters);
+        statusFilter.addEventListener('change', applyFilters);
+        
+        // Set initial values from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('q')) searchInput.value = urlParams.get('q');
+        if (urlParams.has('role')) roleFilter.value = urlParams.get('role');
+        if (urlParams.has('status')) statusFilter.value = urlParams.get('status');
+    });
+</script>
+{% endblock %}

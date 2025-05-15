@@ -26,10 +26,16 @@ SECRET_KEY = "django-insecure-qw1tz*uip_c^l(0v!(gf2ug1!7x1cy0_hv)lh4jpd@$=zbzo&6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
+
+# CSRF Settings
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = False  # Set to True in production
+CSRF_USE_SESSIONS = False  # Store CSRF token in the session
+CSRF_COOKIE_SAMESITE = 'Lax'  # Recommended for most sites
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -41,6 +47,7 @@ INSTALLED_APPS = [
     "presentation.apps.PresentationConfig",
     "business_logic.apps.BusinessLogicConfig",
     "data_access.apps.DataAccessConfig",
+    "custom_admin.apps.CustomAdminConfig",
 ]
 
 MIDDLEWARE = [
@@ -147,6 +154,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Seeding settings
 # Path to the CSV file containing book data
 CSV_FILE_PATH = os.path.join(BASE_DIR, "data_access", "merged_dataframe.csv")
+
+# Authentication settings
+LOGIN_URL = 'custom_admin:login'
 
 # Admin superuser credentials for auto-creation
 DJANGO_SUPERUSER_USERNAME = "admin"

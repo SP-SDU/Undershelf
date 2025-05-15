@@ -1,0 +1,89 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Undershelf Admin{% endblock %}
+
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-sm rounded-lg p-6">
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+        
+        <!-- Book Title -->
+        <div>
+            <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Book Title</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Book Authors -->
+        <div>
+            <label for="{{ form.authors.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Authors</label>
+            {{ form.authors }}
+            {% if form.authors.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.authors.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Book Description -->
+        <div>
+            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Book Categories -->
+        <div>
+            <label for="{{ form.categories.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Categories</label>
+            {{ form.categories }}
+            <p class="text-xs text-gray-500 mt-1">{{ form.categories.help_text }}</p>
+            {% if form.categories.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.categories.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Book Image URL -->
+        <div>
+            <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+            {{ form.image }}
+            {% if form.image.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.image.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Book Publisher -->
+        <div>
+            <label for="{{ form.publisher.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Publisher</label>
+            {{ form.publisher }}
+            {% if form.publisher.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.publisher.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Book Published Date -->
+        <div>
+            <label for="{{ form.publishedDate.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Published Date</label>
+            {{ form.publishedDate }}
+            {% if form.publishedDate.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.publishedDate.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+            <a href="{% url 'custom_admin:book_list' %}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">{% if book %}Update Book{% else %}Add Book{% endif %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

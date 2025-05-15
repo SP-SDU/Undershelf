@@ -1,0 +1,81 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Import Books - Undershelf Admin{% endblock %}
+
+{% block header_title %}Import Books{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="mb-6">
+        <h2 class="text-lg font-medium text-gray-900">Import Books from CSV or Excel</h2>
+        <p class="text-sm text-gray-600 mt-1">Upload a file containing book data to import into the system.</p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- File Upload -->
+        <div>
+            <label for="import_file" class="block text-sm font-medium text-gray-700 mb-1">Select File</label>
+            <input type="file" id="import_file" name="import_file" accept=".csv,.xlsx,.xls" 
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <p class="text-xs text-gray-500 mt-1">Accepted formats: CSV, Excel (.xlsx, .xls)</p>
+        </div>
+        
+        <!-- Import Options -->
+        <div class="space-y-2">
+            <div class="flex items-center">
+                <input type="checkbox" id="skip_header" name="skip_header" class="h-4 w-4 text-blue-600 rounded" checked>
+                <label for="skip_header" class="ml-2 block text-sm text-gray-700">Skip header row</label>
+            </div>
+            <div class="flex items-center">
+                <input type="checkbox" id="update_existing" name="update_existing" class="h-4 w-4 text-blue-600 rounded" checked>
+                <label for="update_existing" class="ml-2 block text-sm text-gray-700">Update existing books</label>
+            </div>
+        </div>
+        
+        <!-- Column Mapping -->
+        <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Column Mapping</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="title_col" class="block text-xs text-gray-500">Title</label>
+                    <input type="text" id="title_col" name="title_col" value="title" 
+                        class="w-full p-1 text-sm border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="authors_col" class="block text-xs text-gray-500">Authors</label>
+                    <input type="text" id="authors_col" name="authors_col" value="authors" 
+                        class="w-full p-1 text-sm border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="description_col" class="block text-xs text-gray-500">Description</label>
+                    <input type="text" id="description_col" name="description_col" value="description" 
+                        class="w-full p-1 text-sm border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="categories_col" class="block text-xs text-gray-500">Categories</label>
+                    <input type="text" id="categories_col" name="categories_col" value="categories" 
+                        class="w-full p-1 text-sm border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="image_col" class="block text-xs text-gray-500">Image URL</label>
+                    <input type="text" id="image_col" name="image_col" value="image" 
+                        class="w-full p-1 text-sm border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="publisher_col" class="block text-xs text-gray-500">Publisher</label>
+                    <input type="text" id="publisher_col" name="publisher_col" value="publisher" 
+                        class="w-full p-1 text-sm border border-gray-300 rounded-md">
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+            <a href="{% url 'custom_admin:book_list' %}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">Import Books</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

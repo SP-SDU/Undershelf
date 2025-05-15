@@ -1,0 +1,256 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Book Management - Undershelf Admin{% endblock %}
+
+{% block header_title %}Book Management{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">Manage and monitor books</h1>
+    <div class="flex space-x-2">
+        <a href="{% url 'custom_admin:book_import' %}" class="btn btn-sm btn-outline">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+            </svg>
+            Import
+        </a>
+        <a href="{% url 'custom_admin:book_export' %}" class="btn btn-sm btn-outline">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Export
+        </a>
+        <a href="{% url 'custom_admin:book_add' %}" class="btn btn-sm btn-primary">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add New Book
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter Bar -->
+<div class="bg-white shadow-sm p-4 rounded-lg mb-6">
+    <form method="get" action="{% url 'custom_admin:book_list' %}" class="flex flex-wrap items-center justify-between">
+        <div class="w-full md:w-64 mb-4 md:mb-0">
+            <div class="relative">
+                {{ filter_form.search }}
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-wrap items-center space-x-2">
+            <div>
+                {{ filter_form.sort }}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-sm btn-primary ml-2">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                    Filter
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Books Table -->
+<div class="bg-white shadow-sm rounded-lg">
+    <table class="min-w-full">
+        <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="py-3 px-4 text-left">
+                    <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600">
+                </th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Book</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genre</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                <th class="py-3 px-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for book in books %}
+            <tr>
+                <td class="py-3 px-4">
+                    <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600">
+                </td>
+                <td class="py-3 px-4">
+                    <div class="flex items-center">
+                        {% if book.image %}
+                        <img class="h-10 w-10 object-cover rounded" src="{{ book.image }}" alt="{{ book.title }}">
+                        {% else %}
+                        <div class="h-10 w-10 rounded bg-gray-200 flex items-center justify-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">{{ book.title }}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-3 px-4">
+                    <div class="text-sm text-gray-900">{{ book.authors|default:"Unknown" }}</div>
+                </td>
+                <td class="py-3 px-4">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {{ book.categories|default:"Uncategorized"|truncatechars:20 }}
+                    </span>
+                </td>
+                <td class="py-3 px-4">
+                    <div class="flex items-center">
+                        {% if book.average_rating %}
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                            <span class="ml-1 text-sm text-gray-600">{{ book.average_rating|floatformat:1 }}</span>
+                        </div>
+                        {% else %}
+                        <span class="text-sm text-gray-400">No rating</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td class="py-3 px-4">
+                    <div class="text-sm text-gray-900">{{ book.last_updated|default:"-" }}</div>
+                </td>
+                <td class="py-3 px-4 text-center">
+                    <div class="flex justify-center space-x-2">
+                        <a href="{% url 'custom_admin:book_edit' book.id %}" class="text-blue-600 hover:text-blue-900">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg>
+                        </a>
+                        <a href="{% url 'custom_admin:book_delete' book.id %}" class="text-red-600 hover:text-red-900">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </a>
+                        <a href="{% url 'book_details' book_id=book.id %}" class="text-gray-600 hover:text-gray-900" target="_blank">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="py-6 px-4 text-center text-gray-500">
+                    No books found. <a href="{% url 'custom_admin:book_add' %}" class="text-blue-600 font-medium">Add a new book</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if books.paginator.num_pages > 1 %}
+<div class="mt-6 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+        Showing {{ books.start_index }}-{{ books.end_index }} of {{ books.paginator.count }}
+    </div>
+    <nav class="flex space-x-1">
+        {% if books.has_previous %}
+        <a href="?page={{ books.previous_page_number }}&search={{ filter_form.search.value|urlencode }}&category={{ filter_form.cleaned_data.category|urlencode }}&sort={{ filter_form.cleaned_data.sort }}" class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Previous
+        </a>
+        {% endif %}
+        
+        {% for num in books.paginator.page_range %}
+        {% if books.number == num %}
+        <a href="#" class="px-3 py-2 border border-blue-500 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+            {{ num }}
+        </a>
+        {% elif num > books.number|add:'-3' and num < books.number|add:'3' %}
+        <a href="?page={{ num }}&search={{ filter_form.search.value|urlencode }}&category={{ filter_form.cleaned_data.category|urlencode }}&sort={{ filter_form.cleaned_data.sort }}" class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            {{ num }}
+        </a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if books.has_next %}
+        <a href="?page={{ books.next_page_number }}&search={{ filter_form.search.value|urlencode }}&category={{ filter_form.cleaned_data.category|urlencode }}&sort={{ filter_form.cleaned_data.sort }}" class="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Next
+        </a>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Using existing search functionality from the project
+        const searchInput = document.getElementById('search-books');
+        const genreFilter = document.getElementById('genre-filter');
+        const sortFilter = document.getElementById('sort-filter');
+        
+        function applyFilters() {
+            const searchTerm = searchInput.value.trim();
+            const genre = genreFilter.value;
+            const sort = sortFilter.value;
+            
+            // Build the query string
+            const params = new URLSearchParams(window.location.search);
+            
+            if (searchTerm) {
+                params.set('q', searchTerm);
+            } else {
+                params.delete('q');
+            }
+            
+            if (genre) {
+                params.set('genre', genre);
+            } else {
+                params.delete('genre');
+            }
+            
+            if (sort) {
+                params.set('sort', sort);
+            } else {
+                params.delete('sort');
+            }
+            
+            // Navigate to the URL with filters
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+        
+        // Add event listeners to filters with debounce for search
+        let debounceTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(applyFilters, 500);
+        });
+        
+        genreFilter.addEventListener('change', applyFilters);
+        sortFilter.addEventListener('change', applyFilters);
+        
+        // Set initial values from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('q')) {
+            searchInput.value = urlParams.get('q');
+        }
+        
+        if (urlParams.has('genre')) {
+            genreFilter.value = urlParams.get('genre');
+        }
+        
+        if (urlParams.has('sort')) {
+            sortFilter.value = urlParams.get('sort');
+        }
+    });
+</script>
+{% endblock %}
