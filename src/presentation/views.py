@@ -3,17 +3,31 @@
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.views.decorators.cache import cache_page
 
 from business_logic.bst import BST
 from business_logic.merge_sort import MergeSort
 from business_logic.top_k import BookRanker
 from data_access.models import Book
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
 
-
+@cache_page(60 * 15)
 def index(request):
-    return render(request, "index.html")
+    k = int(request.GET.get("k", 10))  # Get k parameter, default to 10
+    top_books = BookRanker.get_top_k(k)  # Fetch top k books
+
+    context = {
+        "top_books": top_books,
+        "k_value": k,
+        "title": f"Top {k} Books",
+    }
+    return render(request, "index.html", context)
 
 
+@cache_page(60 * 5)
 def search(request):
     page = request.GET.get("page", 1)
     per_page = 50
@@ -58,7 +72,8 @@ def autocomplete(request):
     if not prefix:
         return JsonResponse({"suggestions": []})
     # Custom BST is super slow and is required for search.
-    # This uses indexed DB query (O(log n + k)) since it is not required for autocomplete.
+    # This uses indexed DB query (O(log n + k)) since it is not required for
+    # autocomplete.
     books = Book.objects.filter(title__istartswith=prefix).order_by("title")[
         :max_results
     ]
@@ -66,6 +81,7 @@ def autocomplete(request):
     return JsonResponse({"suggestions": data})
 
 
+@cache_page(60 * 10)
 def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     reviews = book.reviews.all()
@@ -73,6 +89,7 @@ def book_details(request, book_id):
     return render(request, "book_details.html", {"book": book, "reviews": reviews})
 
 
+@cache_page(60 * 15)
 def top_books(request):
     k = int(request.GET.get("k", 10))
     top_rated_books = BookRanker.get_top_k(k)
@@ -86,4 +103,31 @@ def login(request):
 
 
 def signup(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "signup.html")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken.")
+            return render(request, "signup.html")
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already in use.")
+            return render(request, "signup.html")
+
+        # Create and log in user
+        user = User.objects.create_user(username=username, email=email, password=password) 
+        
+        login(request, user)  # Optional: auto login
+        return redirect("index")  # Replace 'home' with your desired URL name
+
     return render(request, "signup.html")
+
+def about(request):
+    return render(request, 'about.html')    

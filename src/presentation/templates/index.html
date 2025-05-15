@@ -1,33 +1,116 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<main class="max-w-7xl mx-auto px-6 py-12">
-    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
-        <div>
-            <h1 class="text-5xl font-bold text-gray-900 mb-4">Your Personal Library, Reimagined</h1>
-            <p class="text-xl text-gray-600 mb-8">Discover, track, and enjoy your reading journey</p>
-            <div class="space-x-4">
-                <a href="{% url 'signup' %}" class="bg-blue-600 text-white px-6 py-2 rounded-md">Sign Up</a>
-                <a href="{% url 'login' %}" class="border border-blue-600 text-blue-600 px-6 py-2 rounded-md">Login</a>
+<!-- Hero Section with Wave Background Placeholder -->
+<div class="relative bg-white overflow-hidden">
+    <div class="absolute inset-0">
+        <!-- Placeholder for Wave SVG/Image -->
+        <!-- <img class="w-full h-full object-cover" src="{% static 'images/wave.svg' %}" alt="Wave background"> -->
+        <div class="w-full h-full bg-gradient-to-b from-blue-50 via-blue-100 to-transparent opacity-30"></div>
+        <!-- Simple gradient placeholder -->
+    </div>
+    <main class="relative max-w-7xl mx-auto px-6 py-12 z-10"> <!-- Added relative and z-10 -->
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+            <div>
+                <h1 class="text-5xl font-bold text-gray-900 mb-4">Your Personal Library, Reimagined</h1>
+                <p class="text-xl text-gray-600 mb-6">Discover, track, and enjoy your reading journey</p>
+
+                <!-- Search Bar -->
+                <form action="{% url 'search' %}" method="get" class="mb-8 flex">
+                    <input type="text" name="q" placeholder="Search for books by title or author..."
+                        class="flex-grow p-3 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500">
+                    <button type="submit"
+                        class="bg-blue-600 text-white px-6 py-3 rounded-r-md hover:bg-blue-700">Search</button>
+                </form>
+
+                <div class="space-x-4">
+                    <a href="{% url 'signup' %}" class="bg-blue-600 text-white px-6 py-2 rounded-md">Sign Up</a>
+                    <a href="{% url 'login' %}"
+                        class="border border-blue-600 text-blue-600 px-6 py-2 rounded-md">Login</a>
+                </div>
             </div>
-        </div>
-        <div class="relative">
-            <div class="absolute top-0 right-0 bg-white p-6 rounded-lg shadow-lg">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                    </svg>
-                    <div>
-                        <h3 class="font-semibold">Digital Library</h3>
-                        <p class="text-sm text-gray-600">Access your books anywhere</p>
+            <div class="relative">
+                <!-- Placeholder for Wave Design - could be an img or SVG background -->
+                <!-- For example: <img src="{% static 'path/to/wave.svg' %}" class="absolute inset-0 w-full h-full object-cover opacity-50" alt="Wave background"> -->
+                <div class="absolute top-0 right-0 bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                        </svg>
+                        <div>
+                            <h3 class="font-semibold">Digital Library</h3>
+                            <p class="text-sm text-gray-600">Access your books anywhere</p>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div> <!-- End of main content grid -->
+    </main> <!-- End of relative main -->
+</div> <!-- End of Hero Section -->
+
+<!-- Sections below hero -->
+<div class="max-w-7xl mx-auto px-6 py-12"> <!-- Added container -->
+    <!-- Section for Top Books -->
+    <div class="mt-12"> <!-- Adjusted margin -->
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Top Rated Books</h2>
+            <div class="mt-0">
+                <form method="get" action="{% url 'index' %}" class="flex items-center space-x-4">
+                    <label for="k-value" class="font-medium text-gray-700">Show top:</label>
+                    <select id="k-value" name="k" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" onchange="this.form.submit()">
+                        <option value="5" {% if k_value == 5 %}selected{% endif %}>5 books</option>
+                        <option value="10" {% if k_value == 10 %}selected{% endif %}>10 books</option>
+                        <option value="25" {% if k_value == 25 %}selected{% endif %}>25 books</option>
+                        <option value="50" {% if k_value == 50 %}selected{% endif %}>50 books</option>
+                    </select>
+                </form>
+            </div>
         </div>
+        
+        {% if top_books %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+            {% for book in top_books %}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <a href="{% url 'book_details' book_id=book.id %}">
+                    {% if book.image %}
+                    <img src="{{ book.image }}" alt="{{ book.title }}" class="w-full h-64 object-cover">
+                    {% else %}
+                    <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-500">No Image</span>
+                    </div>
+                    {% endif %}
+                </a>
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold mb-1 truncate" title="{{ book.title }}">
+                        <a href="{% url 'book_details' book_id=book.id %}" class="hover:text-blue-600">{{ book.title }}</a>
+                    </h3>
+                    <p class="text-sm text-gray-600 truncate" title="{{ book.authors|default:'Unknown Author' }}">
+                        {{ book.authors|default:"Unknown Author" }}
+                    </p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center">
+                            {% if book.rating %}
+                            <span class="text-yellow-400">★</span>
+                            <span class="ml-1 text-sm text-gray-700">{{ book.rating|floatformat:1 }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            Score: {{ book.score|floatformat:2 }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-gray-600">No top books to display at the moment.</p>
+        {% endif %}
     </div>
 
-    <div class="grid grid-cols-1 gap-8 mt-24 md:grid-cols-3">
+    <!-- Existing Feature Sections (can be kept, modified, or removed) -->
+    <div class="grid grid-cols-1 gap-8 mt-16 md:grid-cols-3">
         <div class="p-6 bg-white rounded-lg shadow">
             <div class="text-blue-600 mb-4">
                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
@@ -78,5 +161,21 @@
         </div>
         <p class="text-gray-600 mt-8">Start your free 30-day trial. No credit card required.</p>
     </div>
-</main>
+    <!-- About Us Section -->
+    <div class="mt-24 text-center">
+        <h2 class="text-3xl font-bold mb-4">About Us</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+            BookHub is a modern digital library platform designed for passionate readers and book enthusiasts.
+            Our mission is to make it easier for everyone to discover, organize, and enjoy books like never before.
+            With personalized recommendations, lightning-fast search, and a community-driven experience, we’re redefining what a personal library can be.
+        </p>
+        <div class="mt-8">
+            <a href="{% url 'about' %}" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition">
+                Learn More
+            </a>
+        </div>
+    </div>
+    
+    
+</div> <!-- End of container for sections below hero -->
 {% endblock %}

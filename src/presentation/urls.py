@@ -10,4 +10,5 @@ urlpatterns = [
     path("sign-up/", views.signup, name="signup"),
     path("autocomplete/", views.autocomplete, name="autocomplete"),
     path("top-books/", views.top_books, name="top_books"),
+    path('about/', views.about, name='about'),
 ]
