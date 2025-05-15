@@ -9,9 +9,12 @@ from business_logic.bst import BST
 from business_logic.merge_sort import MergeSort
 from business_logic.top_k import BookRanker
 from data_access.models import Book
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
 
 
-@cache_page(60 * 15)
 def index(request):
     k = int(request.GET.get("k", 10))  # Get k parameter, default to 10
     top_books = BookRanker.get_top_k(k)  # Fetch top k books
@@ -100,4 +103,31 @@ def login(request):
 
 
 def signup(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "signup.html")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken.")
+            return render(request, "signup.html")
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already in use.")
+            return render(request, "signup.html")
+
+        # Create and log in user
+        user = User.objects.create_user(username=username, email=email, password=password) 
+        
+        login(request, user)  # Optional: auto login
+        return redirect("index")  # Replace 'home' with your desired URL name
+
     return render(request, "signup.html")
+
+def about(request):
+    return render(request, 'about.html')    
