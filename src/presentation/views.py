@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 
-@cache_page(60 * 15)
+
 def index(request):
     k = int(request.GET.get("k", 10))  # Get k parameter, default to 10
     top_books = BookRanker.get_top_k(k)  # Fetch top k books

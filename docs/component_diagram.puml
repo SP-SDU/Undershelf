@@ -1,70 +1,58 @@
 @startuml
+!theme cb_seq_Greys_9 from https://raw.githubusercontent.com/mweagle/C4-PlantUML-Themes/main/palettes
+
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 LAYOUT_WITH_LEGEND()
 
 title Component Diagram
 
-Person(user, "Reader/User", "A person searching for and discovering books")
+Person(user, "User", "A person searching for and discovering books")
 System_Ext(csv_source, "CSV Data Source", "Book dataset in CSV format")
 
 Container_Boundary(undershelf, "Undershelf System") {
-    Container_Boundary(presentation_layer, "Presentation Layer") {
-        Component(web_ui, "Web Interface", "HTML/CSS/JS", "Client-side implementation of user interface")
-        Component(view_controller, "View Controller", "Django Views", "Handles HTTP requests and responses")
-        Component(templates, "Templates", "Django Templates", "Server-side HTML templates for rendering dynamic content")
-    }
 
-    Container_Boundary(business_logic_layer, "Business Logic Layer") {
-        Component(bst_component, "BST Module", "Python", "Implements Binary Search Tree for fast book lookups")
-        Component(autocomplete, "Autocomplete Module", "Python", "Provides search suggestions based on user input")
-        Component(merge_sort, "Sort Module", "Merge/Quick/Heap sort", "Sorts books by ratings, reviews, and publication date")
-        Component(top_k, "Top-K Module", "Heap-based", "Manages ranking of top-rated and most popular books")
-        Component(recommendation, "Recommendation Engine", "Graph-based", "Suggests books based on relationship patterns")
-        Component(graph_algorithms, "Graph Algorithms", "BFS/Dijkstra", "Traversal algorithms to find related books")
-    }
+  Container_Boundary(presentation_layer, "Presentation Layer") {
+    Component(views,      "Views",      "Django Views",               "Orchestrates requests and responses")
+    Component(templates,  "Templates",  "Django Templates",           "Renders HTML")
+  }
 
-    Container_Boundary(data_access_layer, "Data Access Layer") {
-        Component(model_component, "Models", "Django ORM", "Defines data structures for books and reviews")
-        Component(data_preprocessing, "Data Preprocessing", "Python", "Cleans, transforms, and standardizes raw book data")
-        Component(data_import, "Data Import", "Django Management Command", "Imports and loads preprocessed book data from CSV")
-    }
+  Container_Boundary(business_logic_layer, "Business Logic Layer") {
+    Component(search,     "Search Module",         "Python", "Takes query, returns matching books")
+    Component(sort,       "Sorting Module",        "Python", "Takes book list, returns sorted list")
+    Component(rank,       "Ranking Module",        "Python", "Takes book list, returns top-K list")
+    Component(recommend,  "Recommendation Module", "Python", "Takes book list, returns related suggestions")
+  }
 
-    ContainerDb(db, "Database", "SQLite", "Stores book information, reviews, and user data")
+  Container_Boundary(data_access_layer, "Data Access Layer") {
+    Component(model,      "Models",                "Django ORM",                "Defines book & review entities")
+    Component(prep,       "Data Preprocessing",    "Python",                    "Cleans and standardizes raw data")
+    Component(import,     "Data Import",           "Django Management Cmd",     "Loads preprocessed data into DB")
+  }
+
+  ContainerDb(db, "Database", "SQLite", "Stores books, reviews, and user data")
 }
 
-' External Relationships
-Rel(user, web_ui, "Uses", "HTTPS")
-Rel(data_import, csv_source, "Reads from", "CSV")
+' External
+Rel(user,          views,  "Uses",         "HTTPS")
+Rel(import,        csv_source, "Reads from","CSV")
 
-' Presentation Layer Relationships
-Rel(web_ui, view_controller, "Calls")
-Rel(view_controller, templates, "Renders")
+' Presentation orchestration
+Rel(views,     search,      "Calls")
+Rel(views,     sort,        "Calls")
+Rel(views,     rank,        "Calls")
+Rel(views,     recommend,   "Calls")
+Rel(views,     templates,   "Renders")
 
-' Cross-Layer Relationships
-Rel(view_controller, bst_component, "Uses")
-Rel(view_controller, autocomplete, "Uses")
-Rel(view_controller, merge_sort, "Uses")
-Rel(view_controller, top_k, "Uses")
-Rel(view_controller, recommendation, "Uses")
+' Data Access
+Rel(search,    prep,       "Reads/Cleans")
+Rel(sort,      model,      "Reads from")
+Rel(rank,      model,      "Reads from")
+Rel(recommend, model,      "Reads from")
 
-' Business Logic Internal Relationships
-Rel(top_k, merge_sort, "Depends on")
-Rel(autocomplete, bst_component, "Depends on")
-Rel(recommendation, graph_algorithms, "Depends on")
-Rel(recommendation, bst_component, "Uses")
-
-' Business Logic to Data Access Relationships
-Rel(bst_component, model_component, "Reads from")
-Rel(merge_sort, model_component, "Reads from")
-Rel(top_k, model_component, "Reads from")
-Rel(recommendation, model_component, "Reads from")
-Rel(graph_algorithms, model_component, "Reads from")
-
-' Data Access Internal Relationships
-Rel(data_preprocessing, csv_source, "Reads from")
-Rel(data_import, data_preprocessing, "Uses")
-Rel(data_import, model_component, "Creates/Updates")
-Rel(model_component, db, "Read/Write", "ORM")
+Rel(prep,      csv_source, "Reads from")
+Rel(import,    prep,       "Uses")
+Rel(import,    model,      "Creates/Updates")
+Rel(model,     db,         "Read/Write", "ORM")
 
 @enduml

@@ -54,6 +54,10 @@ class TestViews:
         response = client.get(url)
         assert response.status_code == 200
         assert "Undershelf" in str(response.content)
+        # Check if the correct template was used
+        assert "index.html" in [t.name for t in response.templates]
+        # Check if 'top_books' is in the context (even if empty)
+        assert "top_books" in response.context
 
     def test_search_view(self, client, sample_book):
         """Test search view"""
