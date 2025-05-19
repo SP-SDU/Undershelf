@@ -88,8 +88,55 @@ def autocomplete(request):
 def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     reviews = book.reviews.all()
+    
+    # Clean up book description if it exists and has encoding issues
+    if book.description:
+        # Replace common encoding artifacts
+        import re
+        # Remove random character sequences that look like encoding artifacts
+        half_length = len(book.description) // 2
+        first_half = book.description[:half_length]
+        
+        if first_half in book.description[half_length:]:
+            book.description = first_half
+        
+        # Process description content to improve readability
+        book.description = book.description.replace('\r\n', '\n')
+        
+        # Remove excessive line breaks
+        while '\n\n\n' in book.description:
+            book.description = book.description.replace('\n\n\n', '\n\n')
+        
+        # Limit description length to 2000 characters to prevent layout issues
+        if len(book.description) > 2000:
+            book.description = book.description[:2000] + "..."
+            
+    # Get related books based on categories and authors
+    related_books = []
+    
+    if book.categories:
+        # Try to get books with similar categories
+        category_matches = Book.objects.filter(categories__contains=book.categories).exclude(id=book.id)[:3]
+        related_books.extend(list(category_matches))
+        
+    # If we don't have enough related books, add some based on author
+    if len(related_books) < 5 and book.authors:
+        author_matches = Book.objects.filter(authors__contains=book.authors).exclude(id=book.id).exclude(id__in=[b.id for b in related_books])[:5-len(related_books)]
+        related_books.extend(list(author_matches))
+    # Still need more? Add some random popular books
+    if len(related_books) < 5:
+        popular_books = Book.objects.exclude(id=book.id).exclude(id__in=[b.id for b in related_books]).order_by('-ratingsCount')[:5-len(related_books)]
+        related_books.extend(list(popular_books))
+    
+    # If still no related books, just get some random popular ones
+    if not related_books:
+        related_books = Book.objects.exclude(id=book.id).order_by('?')[:5]
 
-    return render(request, "book_details.html", {"book": book, "reviews": reviews})
+    return render(request, "book_details.html", {
+        "book": book, 
+        "reviews": reviews,
+        "related_books": related_books
+    })
 
 
 @cache_page(60 * 15)
