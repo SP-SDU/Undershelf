@@ -83,8 +83,8 @@
                     {% endif %}
                 </a>
                 <div class="p-4">
-                    <h3 class="text-lg font-semibold mb-1 truncate" title="{{ book.title }}">
-                        <a href="{% url 'book_details' book_id=book.id %}" class="hover:text-blue-600">{{ book.title }}</a>
+                    <h3 class="text-lg font-semibold mb-1" title="{{ book.title }}">
+                        <a href="{% url 'book_details' book_id=book.id %}" class="hover:text-blue-600 line-clamp-2 min-h-[3rem]" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ book.title }}</a>
                     </h3>
                     <p class="text-sm text-gray-600 truncate" title="{{ book.authors|default:'Unknown Author' }}">
                         {{ book.authors|default:"Unknown Author" }}
