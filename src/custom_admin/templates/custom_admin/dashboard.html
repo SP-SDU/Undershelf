@@ -7,181 +7,192 @@
 
 {% block content %}
 <!-- Container with max-width to match other pages -->
-<div class="max-w-7xl mx-auto">
-<!-- Stats Row -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <!-- Total Books Card -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-500">Total Books</p>
-                <h3 class="text-3xl font-bold text-gray-900">{{ total_books }}</h3>
-                <span class="text-sm font-medium {% if books_increase %}text-green-600{% else %}text-red-600{% endif %}">
-                    {% if books_increase %}+{% else %}-{% endif %}{{ books_percent_change }}%
-                </span>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-full">
-                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
-
-    <!-- Active Users Card -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-500">Active Users</p>
-                <h3 class="text-3xl font-bold text-gray-900">{{ active_users }}</h3>
-                <span class="text-sm font-medium {% if users_increase %}text-green-600{% else %}text-red-600{% endif %}">
-                    {% if users_increase %}+{% else %}-{% endif %}{{ users_percent_change }}%
-                </span>
-            </div>
-            <div class="bg-green-100 p-3 rounded-full">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Books Card -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Books</p>
+                    <h3 class="text-3xl font-bold text-gray-900">{{ total_books }}</h3>
+                    <span class="text-sm font-medium {% if books_increase %}text-green-600{% else %}text-red-600{% endif %}">
+                        {% if books_increase %}+{% else %}-{% endif %}{{ books_percent_change }}%
+                    </span>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- New Reviews Card -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-500">New Reviews</p>
-                <h3 class="text-3xl font-bold text-gray-900">{{ new_reviews }}</h3>
-                <span class="text-sm font-medium {% if reviews_increase %}text-green-600{% else %}text-red-600{% endif %}">
-                    {% if reviews_increase %}+{% else %}-{% endif %}{{ reviews_percent_change }}%
-                </span>
-            </div>
-            <div class="bg-yellow-100 p-3 rounded-full">
-                <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                </svg>
+        <!-- Active Users Card -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Active Users</p>
+                    <h3 class="text-3xl font-bold text-gray-900">{{ total_users }}</h3>
+                    <span class="text-sm font-medium {% if users_increase %}text-green-600{% else %}text-red-600{% endif %}">
+                        {% if users_increase %}+{% else %}-{% endif %}{{ users_percent_change }}%
+                    </span>
+                </div>
+                <div class="bg-green-100 p-3 rounded-full">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Search Volume Card -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-500">Search Volume</p>
-                <h3 class="text-3xl font-bold text-gray-900">{{ search_volume }}</h3>
-                <span class="text-sm font-medium {% if search_increase %}text-green-600{% else %}text-red-600{% endif %}">
-                    {% if search_increase %}+{% else %}-{% endif %}{{ search_percent_change }}%
-                </span>
-            </div>
-            <div class="bg-purple-100 p-3 rounded-full">
-                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
+        <!-- Reviews Card -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Reviews</p>
+                    <h3 class="text-3xl font-bold text-gray-900">{{ total_reviews }}</h3>
+                    <span class="text-sm font-medium {% if reviews_increase %}text-green-600{% else %}text-red-600{% endif %}">
+                        {% if reviews_increase %}+{% else %}-{% endif %}{{ reviews_percent_change }}%
+                    </span>
+                </div>
+                <div class="bg-yellow-100 p-3 rounded-full">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Charts Row -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- User Activity Chart -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h4 class="text-lg font-medium text-gray-800 mb-4">User Activity</h4>
-        <div class="px-8 py-4">
-            <div class="flex items-end justify-between h-24">
-                {% for day in user_activity %}
-                    <div class="flex flex-col items-center">
-                        <div class="bg-blue-500 w-8 rounded-t" style="height: 40px"></div>
-                        <div class="mt-2 text-xs text-gray-500">{{ day.day }}</div>
+        <!-- Average Rating Card -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Avg. Rating</p>
+                    <h3 class="text-3xl font-bold text-gray-900">{{ avg_rating|floatformat:1 }}</h3>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                        <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ avg_rating_percent }}%"></div>
                     </div>
-                {% endfor %}
+                </div>
+                <div class="bg-purple-100 p-3 rounded-full">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Popular Books Chart -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h4 class="text-lg font-medium text-gray-800 mb-4">Popular Books</h4>
-        <div class="px-4 py-4">
-            <div class="flex items-end justify-between h-24">
-                {% for book in popular_books %}
-                    <div class="flex flex-col items-center w-1/5 px-1">
-                        <div class="bg-blue-500 w-full rounded-t" style="height: 40px"></div>
-                        <div class="mt-2 text-xs text-gray-500 text-center overflow-hidden" title="{{ book.title }}">{{ book.title|truncatechars:15 }}</div>
-                    </div>
-                {% endfor %}
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- User Activity Chart -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h4 class="text-lg font-medium text-gray-800 mb-4">User Activity (Last 7 Days)</h4>
+            <div class="px-4 py-4">
+                <div class="flex items-end justify-between h-48">
+                    {% for day in user_activity %}
+                        <div class="flex flex-col items-center flex-1 px-1">
+                            <div 
+                                class="bg-blue-500 w-full rounded-t" 
+                                style="height: {{ day.count|floatformat:0|default:0 }}%; min-height: 5px;"
+                                title="{{ day.count }} users on {{ day.date|date:'M d' }}"
+                            ></div>
+                            <div class="mt-2 text-xs text-gray-500">{{ day.date|date:'D' }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Recent Activity Table -->
-<div class="bg-white p-6 rounded-lg shadow-md">
-    <div class="flex justify-between items-center mb-6">
-        <h4 class="text-lg font-medium text-gray-800">Recent Activity</h4>
-    </div>
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Book</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for activity in recent_activities %}
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            {% if activity.book.image %}
-                            <div class="flex-shrink-0 h-10 w-10">
-                                <img class="h-10 w-10 object-cover" src="{{ activity.book.image }}" alt="{{ activity.book.title }}">
-                            </div>
-                            {% else %}
-                            <div class="flex-shrink-0 h-10 w-10 bg-gray-200 flex items-center justify-center">
-                                <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                                </svg>
-                            </div>
-                            {% endif %}
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">{{ activity.book.title }}</div>
+        <!-- Popular Books Chart -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h4 class="text-lg font-medium text-gray-800 mb-4">Top Rated Books</h4>
+            <div class="space-y-4">
+                {% for book in popular_books|slice:":5" %}
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded flex items-center justify-center mr-3">
+                            <span class="text-gray-600 font-medium">{{ forloop.counter }}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">
+                                {{ book.title }}
+                            </p>
+                            <div class="flex items-center">
+                                <div class="flex items-center">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= book.avg_rating|floatformat:0|default:0|add:0 %}
+                                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                            </svg>
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                            </svg>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="ml-1 text-xs text-gray-500">({{ book.review_count }})</span>
+                                </div>
                             </div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">{{ activity.book.authors }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {% if activity.action == 'Book Added' %}bg-green-100 text-green-800
-                                    {% elif activity.action == 'Review Added' %}bg-blue-100 text-blue-800
-                                    {% elif activity.action == 'Book Updated' %}bg-yellow-100 text-yellow-800
-                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
-                            {{ activity.action }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ activity.user }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ activity.date }}
-                    </td>
-                </tr>
+                    </div>
                 {% empty %}
-                <tr>
-                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                        No recent activity found
-                    </td>
-                </tr>
+                    <p class="text-sm text-gray-500">No books found</p>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
-</div>
+
+    <!-- Recent Activity Table -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-6">
+            <h4 class="text-lg font-medium text-gray-800">Recent Activities</h4>
+            <a href="{% url 'admin:index' %}" class="text-sm font-medium text-blue-600 hover:text-blue-800">View All</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for activity in recent_activities %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        {% if 'added' in activity.action|lower %}bg-green-100 text-green-800
+                                        {% elif 'updated' in activity.action|lower %}bg-blue-100 text-blue-800
+                                        {% elif 'deleted' in activity.action|lower %}bg-red-100 text-red-800
+                                        else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ activity.action }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900">{{ activity.content_type|capfirst }}: {{ activity.object_repr }}</div>
+                            {% if activity.change_message %}
+                                <div class="text-xs text-gray-500 mt-1">{{ activity.change_message }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ activity.user.username|default:'System' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ activity.action_time|date:"M d, Y H:i" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                            No recent activities found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -18,56 +18,234 @@ import random
 # Helper functions for admin views
 
 # Dashboard helper functions
-def get_mock_stats():
-    """Generate mock statistics for dashboard"""
+def get_stats():
+    """Generate real statistics for dashboard from database"""
+    from django.db.models import Count, Sum, F, FloatField, ExpressionWrapper
+    from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
+    from datetime import timedelta
+    
+    # Get current date and calculate comparison periods
+    today = timezone.now().date()
+    last_week = today - timedelta(days=7)
+    previous_week_start = last_week - timedelta(days=7)
+    
+    # Book statistics
+    total_books = Book.objects.count()
+    # Use publishedDate instead of created_at
+    books_last_week = Book.objects.filter(publishedDate__gte=last_week.isoformat()).count()
+    books_previous_week = Book.objects.filter(
+        publishedDate__range=(
+            previous_week_start.isoformat(), 
+            (last_week - timedelta(days=1)).isoformat()
+        )
+    ).count()
+    
+    # Calculate book percentage change
+    books_percent_change = 0
+    if books_previous_week > 0:
+        books_percent_change = round(
+            ((books_last_week - books_previous_week) / books_previous_week) * 100
+        )
+    
+    # User statistics
+    total_users = User.objects.count()
+    users_last_week = User.objects.filter(date_joined__date__gte=last_week).count()
+    users_previous_week = User.objects.filter(
+        date_joined__date__range=(previous_week_start, last_week - timedelta(days=1))
+    ).count()
+    
+    # Calculate user percentage change
+    users_percent_change = 0
+    if users_previous_week > 0:
+        users_percent_change = round(
+            ((users_last_week - users_previous_week) / users_previous_week) * 100
+        )
+    
+    # Review statistics
+    total_reviews = Review.objects.count()
+    # Since Review model doesn't have created_at, we'll use the current count
+    # This is a temporary solution - consider adding a timestamp field to Review model
+    reviews_last_week = 0
+    reviews_previous_week = 0
+    
+    # Calculate review percentage change - set to 0 since we don't have historical data
+    reviews_percent_change = 0
+    
+    # Average rating - using review_score instead of rating
+    avg_rating = Review.objects.aggregate(avg_rating=Avg('review_score'))['avg_rating'] or 0
+    
     return {
-        'search_volume': "45.2K",
-        'books_increase': True,
-        'books_percent_change': 12,
-        'users_increase': True,
-        'users_percent_change': 8,
-        'reviews_increase': True,
-        'reviews_percent_change': 15,
-        'search_increase': True,
-        'search_percent_change': 5
+        'total_books': total_books,
+        'books_change': books_percent_change,
+        'books_increase': books_percent_change >= 0,
+        'total_users': total_users,
+        'users_change': users_percent_change,
+        'users_increase': users_percent_change >= 0,
+        'total_reviews': total_reviews,
+        'reviews_change': reviews_percent_change,
+        'reviews_increase': reviews_percent_change >= 0,
+        'avg_rating': round(avg_rating, 1) if avg_rating else 0,
+        'avg_rating_percent': round((avg_rating / 5) * 100) if avg_rating else 0,
     }
 
-def get_user_activity_data():
-    """Get user activity data by day of week"""
+def get_user_activity_data(days=7):
+    """Get real user activity data by day from the database
+    
+    Args:
+        days (int): Number of past days to include in the data
+        
+    Returns:
+        dict: Dictionary with day names as keys and activity counts as values
+    """
+    from django.db.models.functions import TruncDate
+    from django.db.models import Count
+    from datetime import datetime, timedelta
+    
+    # Get the date range
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=days-1)
+    
+    # Get user signups by day
+    user_activity = (
+        User.objects
+        .filter(date_joined__date__range=[start_date, end_date])
+        .annotate(date=TruncDate('date_joined'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    
+    # Create a dictionary with all days in the range initialized to 0
+    activity_data = {}
+    for i in range(days):
+        date = (end_date - timedelta(days=i)).strftime('%Y-%m-%d')
+        activity_data[date] = 0
+    
+    # Update with actual data
+    for activity in user_activity:
+        date_str = activity['date'].strftime('%Y-%m-%d')
+        if date_str in activity_data:
+            activity_data[date_str] = activity['count']
+    
+    # Format for the frontend chart
     return {
-        'mon': 25,
-        'tue': 18,
-        'wed': 65,
-        'thu': 40,
-        'fri': 50,
-        'sat': 30,
-        'sun': 20
+        'labels': list(activity_data.keys()),
+        'data': list(activity_data.values()),
+        'total': sum(activity_data.values()),
+        'average': round(sum(activity_data.values()) / days, 1) if days > 0 else 0
     }
 
 def get_popular_books(limit=5):
-    """Get popular books with mock data for visualization"""
-    return [
-        {'title': book.title, 'count': 100 - i * 20, 'percentage': 100 - i * 20} 
-        for i, book in enumerate(Book.objects.all()[:limit])
-    ]
+    """Get popular books based on number of reviews and average rating
+    
+    Args:
+        limit (int): Maximum number of books to return
+        
+    Returns:
+        list: List of dictionaries containing book data with title, review count, and rating
+    """
+    from django.db.models import Count, Avg, F
+    
+    # Get books with their review counts and average ratings
+    popular_books = (
+        Book.objects
+        .annotate(
+            review_count=Count('reviews'),
+            avg_rating=Avg('reviews__review_score')
+        )
+        .filter(review_count__gt=0)  # Only include books with reviews
+        .order_by('-review_count', '-avg_rating')[:limit]
+    )
+    
+    # Find max review count for percentage calculation
+    max_reviews = max(book.review_count for book in popular_books) if popular_books else 1
+    
+    # Format the data for the frontend
+    result = []
+    for book in popular_books:
+        percentage = (book.review_count / max_reviews) * 100 if max_reviews > 0 else 0
+        result.append({
+            'id': book.id,
+            'title': book.title[:50] + '...' if len(book.title) > 50 else book.title,
+            'author': book.authors,
+            'review_count': book.review_count,
+            'avg_rating': round(book.avg_rating, 1) if book.avg_rating else 0,
+            'percentage': round(percentage, 1)
+        })
+    
+    return result
 
 def get_recent_activities(limit=5):
-    """Get recent activity data for dashboard"""
+    """Get recent activity data for dashboard from the database
+    
+    Args:
+        limit (int): Maximum number of activities to return
+        
+    Returns:
+        list: List of recent activities with book, action, user, and timestamp
+    """
+    from django.contrib.contenttypes.models import ContentType
+    from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
+    from django.utils.text import Truncator
+    
+    # Get recent admin actions
+    content_type = ContentType.objects.get_for_model(Book)
+    log_entries = LogEntry.objects.filter(
+        content_type=content_type
+    ).select_related('user').order_by('-action_time')[:limit]
+    
     activities = []
-    for i, book in enumerate(Book.objects.all()[:limit]):
-        action = "Book Added"
-        if i % 3 == 1:
-            action = "Review Added"
-        elif i % 3 == 2:
+    
+    for entry in log_entries:
+        # Determine action type
+        if entry.action_flag == ADDITION:
+            action = "Book Added"
+        elif entry.action_flag == CHANGE:
             action = "Book Updated"
+        else:
+            action = "Modified"
             
+        # Get the book if it still exists
+        try:
+            book = Book.objects.get(pk=entry.object_id)
+            book_title = book.title
+        except Book.DoesNotExist:
+            book_title = "[Deleted Book]"
+        
+        # Truncate the change message if it's too long
+        change_message = Truncator(entry.change_message).chars(100)
+        
         activities.append({
-            'book': book,
+            'id': entry.id,
+            'book_title': book_title,
+            'book_id': entry.object_id,
             'action': action,
-            'user': f"User {i+1}",
-            'date': timezone.now() - timedelta(days=i)
+            'user': entry.user.get_username(),
+            'user_id': entry.user_id,
+            'date': entry.action_time,
+            'change_message': change_message
         })
-    return activities
+    
+    # If we don't have enough activities, fill with recent reviews
+    if len(activities) < limit:
+        # Use review_id instead of created_at for ordering
+        recent_reviews = Review.objects.select_related('book').order_by('-review_id')[:limit - len(activities)]
+        
+        for review in recent_reviews:
+            activities.append({
+                'id': f"review_{review.review_id}",
+                'book_title': review.book.title,
+                'book_id': review.book.id,
+                'action': "Review Added",
+                'user': review.user_id or 'Anonymous',
+                'user_id': review.user_id or 0,
+                'date': timezone.now() - timedelta(days=review.review_id % 30),  # Generate a fake date
+                'change_message': f"Rated {review.review_score} stars"
+            })
+    
+    # Sort all activities by date and limit
+    activities.sort(key=lambda x: x['date'], reverse=True)
+    return activities[:limit]
 
 
 # Analytics helper functions
@@ -187,118 +365,104 @@ def logout_view(request):
 @user_passes_test(is_admin)
 def dashboard(request):
     """Admin dashboard with overview statistics using real data"""
-    # Get basic statistics
-    total_books = Book.objects.count()
-    active_users = User.objects.filter(is_active=True).count()
-    total_users = User.objects.count()
-    total_reviews = Review.objects.count()
+    # Get statistics using our new get_stats function
+    stats = get_stats()
     
-    # Calculate growth and change metrics using actual data
-    # For books - calculate growth from reviews count as an indicator of engagement
-    books_with_reviews = Book.objects.annotate(review_count=Count('reviews')).filter(review_count__gt=0).count()
-    books_percent_change = round((books_with_reviews / total_books * 100) if total_books > 0 else 0)
-    books_increase = books_percent_change > 0
+    # Get user activity data for the chart (last 7 days)
+    activity_data = get_user_activity_data(days=7)
     
-    # For users - compare active vs total as the growth metric
-    users_percent_change = round((active_users / total_users * 100) if total_users > 0 else 0)
-    users_increase = active_users > (total_users - active_users)
+    # Get popular books data (top 5 by review count and rating)
+    popular_books = get_popular_books(limit=5)
     
-    # For reviews - use the average rating as an indicator of quality
-    avg_review_score = Review.objects.aggregate(avg_score=Avg('review_score'))['avg_score'] or 0
-    reviews_percent_change = round(avg_review_score * 20)  # Convert 5-scale to percentage
-    reviews_increase = avg_review_score > 2.5  # Assuming 2.5 is average on 5-scale
+    # Get recent activities (admin actions and reviews)
+    recent_activities = get_recent_activities(limit=10)
     
-    # Calculate real search volume (we'll use reviews as a proxy since we don't have search data)
-    search_volume = f"{total_reviews}" if total_reviews < 1000 else f"{round(total_reviews/1000, 1)}K"
-    search_increase = True if total_reviews > 0 else False
-    search_percent_change = min(round((total_reviews / max(total_books, 1)) * 10), 100)  # Reviews per book ratio
+    # Get recently added books (last 5)
+    # Using publishedDate as substitute for created_at
+    recent_books = Book.objects.order_by('-publishedDate')[:5]
     
-    # Get user activity data - use real data
-    # Create a daily distribution of reviews for the last 7 days
-    last_week = timezone.now() - timedelta(days=7)
-    daily_reviews = Review.objects.filter(review_id__isnull=False)
-    if daily_reviews.exists():
-        # If we have review date data, we could use it - for now create a simulated distribution
-        user_activity = [
-            {'day': 'Mon', 'count': max(5, daily_reviews.count() // 7)},
-            {'day': 'Tue', 'count': max(4, daily_reviews.count() // 7)},
-            {'day': 'Wed', 'count': max(7, daily_reviews.count() // 7 + 2)},
-            {'day': 'Thu', 'count': max(5, daily_reviews.count() // 7)},
-            {'day': 'Fri', 'count': max(6, daily_reviews.count() // 7 + 1)},
-            {'day': 'Sat', 'count': max(4, daily_reviews.count() // 7 - 1)},
-            {'day': 'Sun', 'count': max(3, daily_reviews.count() // 7 - 2)}
-        ]
-    else:
-        # Fallback to simple mockup if no reviews exist
-        user_activity = [
-            {'day': day, 'count': random.randint(3, 8)} 
-            for day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        ]
+    # Get recent reviews with related data
+    # Since Review doesn't have created_at, we'll just use the primary key
+    recent_reviews = Review.objects.select_related('book').order_by('-review_id')[:5]
     
-    # Get popular books - real data based on review counts
-    popular_books = [
-        {"title": book.title, "count": review_count}
-        for book, review_count in Book.objects.annotate(
-            review_count=Count('reviews')
-        ).order_by('-review_count')[:5].values_list('title', 'review_count')
+    # Get top categories by book count
+    from django.db.models import Count
+    # Since categories is a CharField, we need to query differently
+    # This splits the categories string and counts books by category
+    from collections import Counter
+    categories_counter = Counter()
+    
+    # Get all books with categories
+    books_with_categories = Book.objects.exclude(categories__isnull=True).exclude(categories='').values_list('id', 'categories')
+    
+    # Count categories
+    for _, cats in books_with_categories:
+        if cats:
+            # Split categories and count each one
+            for cat in cats.split(','):
+                cat = cat.strip()
+                if cat:
+                    categories_counter[cat] += 1
+    
+    # Get top 5 categories
+    top_categories = [{'category': cat, 'count': count} 
+                     for cat, count in categories_counter.most_common(5)]
+    
+    # Format categories data for the template
+    categories_data = [
+        {'name': cat['category'], 'count': cat['count']} 
+        for cat in top_categories
     ]
     
-    # If no books with reviews, use the first 5 books
-    if not popular_books:
-        popular_books = [
-            {"title": book.title[:20] + "..." if len(book.title) > 20 else book.title, "count": random.randint(5, 20)}
-            for book in Book.objects.all()[:5]
-        ]
+    # Calculate total books for percentage calculations
+    total_books = stats.get('total_books', 1)  # Avoid division by zero
     
-    # Get recent activities - based on the most recent books and reviews
-    recent_books = Book.objects.all().order_by('-id')[:3]
-    recent_reviews = Review.objects.all().order_by('-review_id')[:2]
+    # Add percentage to categories
+    for cat in categories_data:
+        cat['percentage'] = round((cat['count'] / total_books) * 100, 1)
     
-    recent_activities = []
+    # Format user activity data for the chart
+    user_activity = [
+        {'day': label[-5:], 'count': count}  # Just show day and month (e.g., "01-01")
+        for label, count in zip(activity_data['labels'], activity_data['data'])
+    ]
     
-    # Add recent books to activities
-    for i, book in enumerate(recent_books):
-        recent_activities.append({
-            'book': book,
-            'book_title': book.title,
-            'action': 'Book Added',
-            'author': book.authors.split(',')[0] if book.authors else 'Unknown',
-            'user': f'User {i + 1}',
-            'date': timezone.now() - timedelta(days=i)
-        })
-    
-    # Add recent reviews to activities
-    for i, review in enumerate(recent_reviews):
-        recent_activities.append({
-            'book': review.book,
-            'book_title': review.book.title,
-            'action': 'Review Added',
-            'author': review.book.authors.split(',')[0] if review.book.authors else 'Unknown',
-            'user': f'User {i + 3}',
-            'date': timezone.now() - timedelta(days=i + 2)
-        })
-    
-    # Sort by date (newest first)
-    recent_activities.sort(key=lambda x: x['date'], reverse=True)
-    
-    # Create context with all dashboard data using real statistics
+    # Create context with all dashboard data
     context = {
         'active_page': 'dashboard',
-        'total_books': total_books,
-        'active_users': active_users,
-        'new_reviews': total_reviews,
-        'search_volume': search_volume,
-        'books_increase': books_increase,
-        'books_percent_change': books_percent_change,
-        'users_increase': users_increase,
-        'users_percent_change': users_percent_change,
-        'reviews_increase': reviews_increase,
-        'reviews_percent_change': reviews_percent_change,
-        'search_increase': search_increase,
-        'search_percent_change': search_percent_change,
+        'title': 'Dashboard',
+        'current_date': timezone.now().strftime('%B %d, %Y'),
+        
+        # Statistics
+        'total_books': stats.get('total_books', 0),
+        'total_users': stats.get('total_users', 0),
+        'total_reviews': stats.get('total_reviews', 0),
+        'avg_rating': stats.get('avg_rating', 0),
+        'avg_rating_percent': stats.get('avg_rating_percent', 0),
+        
+        # Change metrics
+        'books_increase': stats.get('books_change', 0) >= 0,
+        'books_percent_change': abs(stats.get('books_change', 0)),
+        'users_increase': stats.get('users_change', 0) >= 0,
+        'users_percent_change': abs(stats.get('users_change', 0)),
+        'reviews_increase': stats.get('reviews_change', 0) >= 0,
+        'reviews_percent_change': abs(stats.get('reviews_change', 0)),
+        
+        # Charts and activity data
         'user_activity': user_activity,
+        'activity_data': json.dumps(activity_data),
         'popular_books': popular_books,
-        'recent_activities': recent_activities
+        'recent_activities': recent_activities,
+        'recent_books': recent_books,
+        'recent_reviews': recent_reviews,
+        'top_categories': categories_data,
+        
+        # For backward compatibility
+        'active_users': stats.get('total_users', 0),
+        'new_reviews': stats.get('total_reviews', 0),
+        'search_volume': f"{stats.get('total_reviews', 0) // 10}K",
+        'search_increase': stats.get('reviews_change', 0) >= 0,
+        'search_percent_change': min(abs(stats.get('reviews_change', 0)), 100)
     }
     
     return render(request, 'custom_admin/dashboard.html', context)
