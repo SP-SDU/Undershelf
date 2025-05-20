@@ -10,9 +10,12 @@ from business_logic.merge_sort import MergeSort
 from business_logic.top_k import BookRanker
 from data_access.models import Book
 from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth import login
+#from django.contrib.auth.models import User
+#from django.contrib.auth import login
 from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate, logout
+from .forms import SignUpForm
+from django.contrib.auth.forms import AuthenticationForm
 
 
 def index(request):
@@ -98,36 +101,40 @@ def top_books(request):
     return render(request, "top_books.html", context)
 
 
-def login(request):
-    return render(request, "login.html")
+def signup_view(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Automatically log in after signup
+            messages.success(request, "Signup successful!")
+            return redirect('index')
+        else:
+            messages.error(request, "Signup failed. Please correct the errors below.")
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 
 
-def signup(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, "Login successful!")
+            return redirect('index')
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
 
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return render(request, "signup.html")
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken.")
-            return render(request, "signup.html")
-
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already in use.")
-            return render(request, "signup.html")
-
-        # Create and log in user
-        user = User.objects.create_user(username=username, email=email, password=password) 
-        
-        login(request, user)  # Optional: auto login
-        return redirect("index")  # Replace 'home' with your desired URL name
-
-    return render(request, "signup.html")
+#*def logout_view(request):
+#    logout(request)
+#    messages.info(request, "Logged out successfully.")
+#   return redirect('login')
 
 def about(request):
     return render(request, 'about.html')    

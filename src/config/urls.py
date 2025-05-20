@@ -17,9 +17,15 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("custom-admin/", include("custom_admin.urls")),
     path("", include("presentation.urls")),
+    # Index template view (added from main)
+    # Note: This might clash with presentation.urls - ensure routing is correct
+    path('index/', TemplateView.as_view(template_name='index.html'), name='index'),
+    # Commented out from main branch
+    # path('', include('accounts.urls')),
 ]
