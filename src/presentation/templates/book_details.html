@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load book_filters %}
 
 {% block title %}{{ book.title }} - Undershelf{% endblock %}
 
@@ -53,19 +52,16 @@
                         <span class="font-semibold">Publisher:</span> {{ book.publisher }}
                     </div>
                     {% endif %}
-                    
-                    {% if book.categories %}
+                      {% if book.categories %}
                     <div class="md:col-span-2">
-                        <span class="font-semibold">Categories:</span> 
-                        {% if book.categories|slice:":1" == '[' %}
-                            {% for category in book.categories|slice:"1:-1"|split:"," %}
-                                <span class="inline-block bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs font-semibold mr-2 mb-2">{{ category|slice:"1:-1" }}</span>
-                            {% endfor %}
-                        {% else %}
-                            {% for category in book.categories|split:"," %}
-                                <span class="inline-block bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs font-semibold mr-2 mb-2">{{ category|strip }}</span>
-                            {% endfor %}
-                        {% endif %}
+                        <span class="font-semibold">Categories:</span>
+                        {% with categories=book.categories %}
+                            {% if categories|slice:":1" == '[' %}
+                                <span class="inline-block bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs font-semibold mr-2 mb-2">{{ categories|slice:"1:-1" }}</span>
+                            {% else %}
+                                <span class="inline-block bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs font-semibold mr-2 mb-2">{{ categories }}</span>
+                            {% endif %}
+                        {% endwith %}
                     </div>
                     {% endif %}
                 </div>
@@ -94,55 +90,57 @@
                 <!-- Action Button -->
                 <a href="javascript:history.back()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Back to Results
+                    Go Back
                 </a>
             </div>
         </div>
 
-        <!-- Recommendations -->
-        <div class="container mx-auto py-8">
-            <h2 class="text-2xl font-semibold mb-6">You May Also Like</h2>
-        
-            {% if recommended_books %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {% for rec_book in recommended_books %}
-            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
-                {% if rec_book.reviews.count > 50 %}
-                <div class="badge badge-primary absolute m-3">Bestseller</div>
-                {% endif %}
-                <figure class="px-4 pt-4">
-                <img src="{{ rec_book.image }}" alt="{{ rec_book.title }}" class="rounded-xl object-cover h-48 w-full" />
-                </figure>
-                <div class="card-body">
-                <h3 class="card-title text-lg line-clamp-2">{{ rec_book.title }}</h3>
-                <p class="text-sm text-muted mb-2">by {{ rec_book.authors|default:"Unknown" }}</p>
-        
-                <div class="flex items-center">
-                    {% for i in "12345"|make_list %}
-                    {% if forloop.counter <= rec_book.avg_rating|default:0 %}
-                        <i class="fa-solid fa-star text-yellow-400"></i>
-                    {% elif forloop.counter <= rec_book.avg_rating|default_if_none:0|add:"0.5" %}
-                        <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
-                    {% else %}
-                        <i class="fa-regular fa-star text-yellow-400"></i>
-                    {% endif %}
-                    {% endfor %}
-                    <span class="text-sm text-gray-500 ml-2">({{ rec_book.reviews.count }})</span>
-                </div>
-                </div>
-                <div class="card-actions justify-end p-4">
-                <a href="{% url 'book_details' rec_book.id %}" class="btn btn-primary btn-sm">View Details</a>
-                </div>
-            </div>
-            {% endfor %}
-            </div>
-            {% else %}
-            <div class="alert alert-info mt-4">
-            No recommendations available for this book.
-            </div>
-            {% endif %}
-        </div>
+    <!-- Recommendations -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mt-8">
+        <h2 class="text-2xl font-semibold mb-6">You May Also Like</h2>
     
+        {% if recommended_books %}
+        <div class="carousel w-full relative overflow-hidden">
+            <div id="book-recommendations" class="carousel-item flex w-full gap-4 px-4 pb-2 overflow-x-auto snap-x scroll-smooth">
+                {% for rec_book in recommended_books %}
+                <div class="card bg-base-100 shadow-xl w-64 md:w-72 flex-shrink-0 snap-center">
+                    {% if rec_book.reviews.count > 50 %}
+                    <div class="badge badge-primary absolute m-3">Bestseller</div>
+                    {% endif %}
+                    <figure class="px-4 pt-4">
+                        <img src="{{ rec_book.image }}" alt="{{ rec_book.title }}" class="rounded-xl object-cover h-48 w-full" />
+                    </figure>
+                    <div class="card-body flex flex-col h-60">
+                        <h3 class="card-title text-lg line-clamp-2">{{ rec_book.title }}</h3>
+                        <p class="text-sm text-gray-600 mb-2">by {{ rec_book.authors|default:"Unknown" }}</p>
+                
+                        <div class="flex items-center">
+                            {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= rec_book.avg_rating|default:0 %}
+                                <i class="fa-solid fa-star text-yellow-400"></i>
+                            {% elif forloop.counter <= rec_book.avg_rating|default_if_none:0|add:"0.5" %}
+                                <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star text-yellow-400"></i>
+                            {% endif %}
+                            {% endfor %}
+                            <span class="text-sm text-gray-500 ml-2">({{ rec_book.reviews.count }})</span>
+                        </div>
+                        
+                        <div class="card-actions justify-end mt-auto">
+                            <a href="{% url 'book_details' rec_book.id %}" class="btn btn-primary btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info mt-4">
+            No recommendations available for this book.
+        </div>
+        {% endif %}
+    </div>
+
     <!-- Reviews Section -->
     <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Reader Reviews</h2>
@@ -152,7 +150,7 @@
             {% for review in reviews %}
             <div class="bg-gray-50 rounded-lg p-4 shadow">
                 <div class="flex items-center mb-2">
-                    {% for i in "12345" %}
+                    {% for i in "52" %}
                         {% if forloop.counter <= review.review_score %}
                             <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                         {% else %}
@@ -172,39 +170,13 @@
         </div>
         {% endif %}
     </div>
-    
-    <!-- You May Also Like Section -->
-    {% if related_books %}
-    <div class="mt-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">You May Also Like</h2>
-        
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {% for related_book in related_books %}
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <a href="{% url 'book_details' book_id=related_book.id %}">
-                    {% if related_book.image %}
-                    <img src="{{ related_book.image }}" alt="{{ related_book.title }}" class="w-full h-48 object-cover">
-                    {% else %}
-                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-500">No Image</span>
-                    </div>
-                    {% endif %}
-                    <div class="p-4">
-                        <h3 class="text-sm font-medium text-gray-900 truncate" title="{{ related_book.title }}">{{ related_book.title }}</h3>
-                        <p class="text-xs text-gray-500 truncate" title="{{ related_book.authors|default:'Unknown Author' }}">{{ related_book.authors|default:"Unknown Author" }}</p>
-                    </div>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}
 
 {% block tail_js %}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Book description expand/collapse functionality
     const description = document.getElementById('book-description');
     const fadeOverlay = document.getElementById('fade-overlay');
     const readMoreBtn = document.getElementById('read-more-button');
@@ -226,6 +198,22 @@
         }
       });
     }
+      // Carousel navigation
+    const carousel = document.querySelector('#book-recommendations');
+
+    if (carousel && prevButton && nextButton) {
+      // Calculate scroll amount based on card width
+      const getScrollAmount = () => {
+        // Get the width of a single book card plus its gap
+        const cardElement = carousel.querySelector('.card');
+        if (!cardElement) return 300; // Default fallback
+        
+        // Get card width including any margin/padding
+        const cardWidth = cardElement.offsetWidth;
+        // Add the gap value (16px = 1rem by default in Tailwind)
+        const gapSize = 16; // from gap-4 class (4 * 4px)
+        return cardWidth + gapSize;
+      };
   });
 </script>
 {% endblock %}
