@@ -74,7 +74,7 @@
                     {% for i in "12345"|make_list %}
                     {% if forloop.counter <= rec_book.avg_rating|default:0 %}
                         <i class="fa-solid fa-star text-yellow-400"></i>
-                    {% elif forloop.counter <= rec_book.avg_rating|add:"0.5"|default:0 %}
+                    {% elif forloop.counter <= rec_book.avg_rating|default_if_none:0|add:"0.5" %}
                         <i class="fa-solid fa-star-half-stroke text-yellow-400"></i>
                     {% else %}
                         <i class="fa-regular fa-star text-yellow-400"></i>
