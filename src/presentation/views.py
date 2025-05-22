@@ -37,7 +37,7 @@ def index(request):
 
 def search(request):
     page = request.GET.get("page", 1)
-    per_page = 50
+    per_page = 100
     sort = request.GET.get("sort", "title")
     order = request.GET.get("order", "asc")
     view = request.GET.get("view", "grid")
