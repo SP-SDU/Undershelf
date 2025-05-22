@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ title }} | {% trans "Undershelf | Admin" %}{% endblock %}
+
+{% block extrastyle %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        /* Override Django's default theme */
+        :root {
+            --primary: #2563eb !important;
+            --secondary: #1d4ed8 !important;
+            --accent: #3b82f6 !important;
+            --primary-fg: #fff !important;
+            --body-bg: #f3f4f6 !important;
+            --body-fg: #111827 !important;
+            --link-fg: #2563eb !important;
+            --link-hover-color: #1d4ed8 !important;
+            --hairline-color: #e5e7eb !important;
+            --border-color: #d1d5db !important;
+        }
+        /* Override Django's theme selector/toggler */
+        #header .theme-toggle {
+            display: none !important;
+        }
+    </style>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+        // force light theme
+        (function() {
+            document.documentElement.setAttribute('data-theme', 'light');
+            
+            Object.defineProperty(document.documentElement.dataset, 'theme', {
+                get: function() { return 'light'; },
+                set: function() {  }
+            });
+        })();
+    </script>
+    <script>
+        // Remove the theme toggler
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) {
+                themeToggle.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">{% trans "Undershelf | Admin" %}</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
