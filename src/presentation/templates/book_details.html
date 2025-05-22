@@ -175,45 +175,44 @@
 
 {% block tail_js %}
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Book description expand/collapse functionality
-    const description = document.getElementById('book-description');
-    const fadeOverlay = document.getElementById('fade-overlay');
-    const readMoreBtn = document.getElementById('read-more-button');
-    
-    if (description && fadeOverlay && readMoreBtn) {
-      let expanded = false;
+    document.addEventListener('DOMContentLoaded', function() {
+      const description = document.getElementById('book-description');
+      const fadeOverlay = document.getElementById('fade-overlay');
+      const readMoreBtn = document.getElementById('read-more-button');
       
-      readMoreBtn.addEventListener('click', function() {
-        expanded = !expanded;
+      if (description && fadeOverlay && readMoreBtn) {
+        let expanded = false;
         
-        if (expanded) {
-          description.style.maxHeight = 'none';
-          fadeOverlay.style.display = 'none';
-          readMoreBtn.innerHTML = '<span>Read less</span><svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>';
-        } else {
-          description.style.maxHeight = '150px';
-          fadeOverlay.style.display = 'block';
-          readMoreBtn.innerHTML = '<span>Read more</span><svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>';
-        }
-      });
-    }
-      // Carousel navigation
-    const carousel = document.querySelector('#book-recommendations');
+        readMoreBtn.addEventListener('click', function() {
+          expanded = !expanded;
+          
+          if (expanded) {
+            description.style.maxHeight = 'none';
+            fadeOverlay.style.display = 'none';
+            readMoreBtn.innerHTML = '<span>Read less</span><svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>';
+          } else {
+            description.style.maxHeight = '150px';
+            fadeOverlay.style.display = 'block';
+            readMoreBtn.innerHTML = '<span>Read more</span><svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>';
+          }
+        });
+      }
+
+      // Carousel
+      const carousel = document.querySelector('#book-recommendations');
 
     if (carousel && prevButton && nextButton) {
-      // Calculate scroll amount based on card width
       const getScrollAmount = () => {
-        // Get the width of a single book card plus its gap
         const cardElement = carousel.querySelector('.card');
-        if (!cardElement) return 300; // Default fallback
         
-        // Get card width including any margin/padding
+        if (!cardElement) return 300;
+
         const cardWidth = cardElement.offsetWidth;
-        // Add the gap value (16px = 1rem by default in Tailwind)
-        const gapSize = 16; // from gap-4 class (4 * 4px)
+        const gapSize = 16;
+
         return cardWidth + gapSize;
       };
+    }
   });
 </script>
 {% endblock %}
