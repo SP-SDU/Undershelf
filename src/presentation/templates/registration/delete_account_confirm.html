@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-red-500 via-pink-500 to-red-700 min-h-screen flex items-center justify-center py-8 px-4">
+    <div class="card bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <div class="text-center mb-6">
+            <svg class="w-16 h-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
+        
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Delete Account</h2>
+        <p class="text-center text-gray-600 mb-6">This action cannot be undone.</p>
+        
+        <div class="alert alert-error mb-6">
+            <div class="flex">
+                <svg class="h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="ml-3">
+                    <p class="text-sm">
+                        Deleting your account will permanently remove all your data, including:
+                    </p>
+                    <ul class="list-disc list-inside mt-2 text-sm">
+                        <li>Your profile information</li>
+                        <li>Your reading history and preferences</li>
+                        <li>Your reviews and ratings</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="flex justify-between">
+                <a href="{% url 'profile' %}" 
+                   class="btn btn-ghost">
+                    Cancel
+                </a>
+                
+                <button type="submit"
+                    class="btn btn-error">
+                    Permanently Delete Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-violet-500 via-indigo-500 to-blue-500 min-h-screen flex items-center justify-center py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="card bg-white shadow-lg rounded-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4">
+                <h1 class="text-2xl font-bold text-white">My Profile</h1>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- User Info -->
+                    <div class="md:col-span-1">
+                        <div class="card bg-base-100 p-6 rounded-lg shadow-sm">                            <div class="text-center mb-4">
+                                <div class="avatar placeholder">
+                                    <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full mx-auto flex items-center justify-center">
+                                        <span class="text-3xl font-bold flex items-center justify-center h-full">{{ user.username|first|upper }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-lg font-semibold text-gray-800">{{ user.username }}</h3>
+                            <p class="text-gray-600 mt-1">{{ user.email }}</p>
+                            <p class="text-sm text-gray-500 mt-1">Member since {{ user.date_joined|date:"F j, Y" }}</p>
+                              <div class="mt-6 border-t border-gray-200 pt-4 space-y-3">
+                                {% if user.is_superuser %}
+                                <a href="{% url 'admin:index' %}" 
+                                class="btn btn-primary btn-outline w-full">
+                                    Admin Panel
+                                </a>
+                                {% endif %}
+                                
+                                <a href="{% url 'delete_account' %}" 
+                                class="btn btn-error btn-outline w-full">
+                                    Delete Account
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Settings -->
+                    <div class="md:col-span-2">
+                        <div class="card bg-base-100 p-6 rounded-lg shadow-sm">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Change Password</h2>
+                            
+                            <form method="post" class="space-y-4">
+                                {% csrf_token %}
+                                
+                                {% if form_errors %}
+                                <div class="alert alert-error" role="alert">
+                                    <p class="font-bold">Please fix the errors below</p>
+                                    <ul class="list-disc pl-4">
+                                        {% for error in form_errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                                
+                                {% if messages %}
+                                <div class="alert alert-success" role="alert">
+                                    {% for message in messages %}
+                                    <p>{{ message }}</p>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                  <div>
+                                    <label for="{{ password_form.old_password.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                        Current Password
+                                    </label>
+                                    <input type="password" name="{{ password_form.old_password.name }}" id="{{ password_form.old_password.id_for_label }}" class="input input-bordered w-full" required>
+                                    {% if password_form.old_password.errors %}
+                                    <span class="text-red-600 text-xs">{{ password_form.old_password.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div>
+                                    <label for="{{ password_form.new_password1.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                        New Password
+                                    </label>
+                                    <input type="password" name="{{ password_form.new_password1.name }}" id="{{ password_form.new_password1.id_for_label }}" class="input input-bordered w-full" required>
+                                    <p class="text-xs text-gray-500 mt-1">{{ password_form.new_password1.help_text|safe }}</p>
+                                    {% if password_form.new_password1.errors %}
+                                    <span class="text-red-600 text-xs">{{ password_form.new_password1.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div>
+                                    <label for="{{ password_form.new_password2.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                        Confirm New Password
+                                    </label>
+                                    <input type="password" name="{{ password_form.new_password2.name }}" id="{{ password_form.new_password2.id_for_label }}" class="input input-bordered w-full" required>
+                                    {% if password_form.new_password2.errors %}
+                                    <span class="text-red-600 text-xs">{{ password_form.new_password2.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="pt-4">
+                                    <button type="submit"
+                                        class="btn btn-primary w-full bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition duration-200">
+                                        Update Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

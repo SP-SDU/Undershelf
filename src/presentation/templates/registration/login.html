@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-indigo-500 via-blue-500 to-green-500 min-h-screen flex items-center justify-center py-8 px-4">
+    <div class="card bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Welcome Back</h2>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="alert alert-error text-sm" role="alert">
+                <p class="font-bold">Please correct the errors below:</p>
+                <ul class="list-disc ml-4">
+                    {% for field in form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <div>
+                <label for="id_username" class="block text-sm font-semibold text-gray-700">Username</label>
+                <input type="text" name="username" id="id_username" autocomplete="username" required
+                    class="input input-bordered w-full">
+            </div>
+
+            <div>
+                <label for="id_password" class="block text-sm font-semibold text-gray-700">Password</label>
+                <input type="password" name="password" id="id_password" autocomplete="current-password" required
+                    class="input input-bordered w-full">
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="form-control">
+                    <label class="label cursor-pointer">
+                        <input id="remember_me" name="remember_me" type="checkbox" class="checkbox checkbox-primary">
+                        <span class="label-text ml-2">Remember me</span>
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="{% url 'password_reset' %}" class="text-indigo-700 hover:underline font-semibold">
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit"
+                    class="btn btn-primary w-full bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition duration-200">
+                    Log in
+                </button>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-600">
+                    Don't have an account? <a href="{% url 'signup' %}" class="text-indigo-700 hover:underline font-semibold">Sign up</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

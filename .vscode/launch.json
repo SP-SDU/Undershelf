@@ -13,7 +13,10 @@
             ],
             "django": true,
             "autoStartBrowser": true,
-            "program": "${workspaceFolder}\\src\\manage.py",
+            "program": "${workspaceFolder}/src/manage.py",
+            "preLaunchTask": "Setup Django Project",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
