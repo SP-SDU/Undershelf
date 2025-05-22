@@ -1,22 +1,23 @@
-# Use importlib to import module with hyphen in name
-
+from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.views.decorators.cache import cache_page
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.cache import patch_cache_control, patch_vary_headers
 
 from business_logic.bst import BST
 from business_logic.cbf import BookRecommender
 from business_logic.merge_sort import MergeSort
 from business_logic.top_k import BookRanker
 from data_access.models import Book
-from django.contrib import messages
-#from django.contrib.auth.models import User
-#from django.contrib.auth import login
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
+
 from .forms import SignUpForm
-from django.contrib.auth.forms import AuthenticationForm
+
+
+def cache_page(response):
+    patch_vary_headers(response, ("Cookie",))
+    patch_cache_control(response, max_age=60 * 15, public=False, private=True)
 
 
 def index(request):
@@ -28,10 +29,12 @@ def index(request):
         "k_value": k,
         "title": f"Top {k} Books",
     }
-    return render(request, "index.html", context)
+
+    response = render(request, "index.html", context)
+    cache_page(response)
+    return response
 
 
-@cache_page(60 * 5)
 def search(request):
     page = request.GET.get("page", 1)
     per_page = 50
@@ -67,7 +70,10 @@ def search(request):
         "view": view,
         "request": request,
     }
-    return render(request, "search.html", context)
+
+    response = render(request, "search.html", context)
+    cache_page(response)
+    return response
 
 
 def autocomplete(request):
@@ -85,7 +91,6 @@ def autocomplete(request):
     return JsonResponse({"suggestions": data})
 
 
-@cache_page(60 * 10)
 def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     reviews = book.reviews.all()
@@ -94,56 +99,54 @@ def book_details(request, book_id):
 
     recommended_books = BookRecommender.get_cbf_list(userid, n_recommendations=8)
 
-    return render(
+    response = render(
         request,
         "book_details.html",
         {"book": book, "reviews": reviews, "recommended_books": recommended_books},
     )
+    cache_page(response)
+    return response
 
 
-@cache_page(60 * 15)
-def top_books(request):
-    k = int(request.GET.get("k", 10))
-    top_rated_books = BookRanker.get_top_k(k)
-
-    context = {"top_books": top_rated_books, "k_value": k, "title": f"Top {k} Books"}
-    return render(request, "top_books.html", context)
+def about(request):
+    return render(request, "about.html")
 
 
 def signup_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Automatically log in after signup
-            messages.success(request, "Signup successful!")
-            return redirect('index')
-        else:
-            messages.error(request, "Signup failed. Please correct the errors below.")
+            login(request, user)
+            return redirect("index")
     else:
         form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, "registration/signup.html", {"form": form})
 
 
-def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            messages.success(request, "Login successful!")
-            return redirect('index')
-        else:
-            messages.error(request, "Invalid username or password.")
+@login_required
+def profile_view(request):
+    if request.method == "POST":
+        password_form = PasswordChangeForm(request.user, request.POST)
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # keeps the user logged in
+            return redirect("profile")
     else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+        password_form = PasswordChangeForm(request.user)
+
+    return render(
+        request,
+        "registration/profile.html",
+        {
+            "password_form": password_form,
+        },
+    )
 
 
-#*def logout_view(request):
-#    logout(request)
-#    messages.info(request, "Logged out successfully.")
-#   return redirect('login')
-
-def about(request):
-    return render(request, 'about.html')    
+@login_required
+def delete_account_view(request):
+    if request.method == "POST":
+        request.user.delete()
+        return redirect("index")
+    return render(request, "registration/delete_account_confirm.html")

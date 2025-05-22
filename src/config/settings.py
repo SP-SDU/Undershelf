@@ -142,3 +142,11 @@ STATICFILES_DIRS = [BASE_DIR / "presentation" / "static"]
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Accounts settings
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = "login"
+
+# Email settings for password reset functionality
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # For development

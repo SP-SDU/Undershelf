@@ -26,15 +26,31 @@
                             Search
                         </a>
                     </div>
-                </div>
-                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                </div>                <div class="hidden sm:ml-6 sm:flex sm:items-center">
                     <div class="ml-3 relative">
-                        <a href="{% url 'login' %}" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">
-                            Login
-                        </a>
-                        <a href="{% url 'signup' %}" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium">
-                            Sign Up
-                        </a>
+                        {% if user.is_authenticated %}
+                            <div class="flex items-center space-x-4">
+                                <a href="{% url 'profile' %}" class="text-gray-700 hover:text-gray-900 flex items-center">
+                                    <span class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center">
+                                        {{ user.username|first|upper }}
+                                    </span>
+                                    <span class="ml-1">{{ user.username }}</span>
+                                </a>
+                                <form method="post" action="{% url 'logout' %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">
+                                Login
+                            </a>
+                            <a href="{% url 'signup' %}" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium">
+                                Sign Up
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
