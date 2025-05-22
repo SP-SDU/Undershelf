@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+
 from data_access.models import Book, Review
 
 
@@ -46,7 +47,7 @@ class BookRecommender:
         categories_len = len(user_categories["categories"].unique())
 
         if categories_len == 1:
-            print("Recommendation wont be effective for one genre")
+            # Recommendation wont be effective for one genre
             # rng = np.random.default_rng(None)
             # index_random = rng.integers(low=0, high=len(merged_df.index), size=1)
             # index_random = index_random[0]
@@ -118,8 +119,8 @@ class BookRecommender:
         )
         # keep top‑n scores
         result = booklist_match.result[:n_recommendations]
-        # convert titles → Book instances (preserving order)
-        titles = result.index.tolist()
-        books = list(Book.objects.filter(title__in=titles))
-        title_map = {b.title: b for b in books}
-        return [title_map[t] for t in titles if t in title_map]
+        # convert book IDs → Book instances (preserving order)
+        book_ids = booklist_match.loc[result.index, "Id"].tolist()
+        books = list(Book.objects.filter(id__in=book_ids))
+        book_map = {b.id: b for b in books}
+        return [book_map[book_id] for book_id in book_ids if book_id in book_map]

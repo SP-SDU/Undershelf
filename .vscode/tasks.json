@@ -6,7 +6,7 @@
             "type": "process",
             "command": "python",
             "args": [
-                "${workspaceFolder}\\run.py",
+                "${workspaceFolder}/run.py",
                 "--setup-only"
             ],
             "presentation": {
