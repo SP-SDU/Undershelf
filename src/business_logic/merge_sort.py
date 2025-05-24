@@ -2,6 +2,12 @@ from typing import List
 
 import numpy as np
 
+from business_logic.aspects import (
+    error_handler,
+    method_logger,
+    performance_monitor,
+    simple_cache,
+)
 from data_access.models import Book
 
 
@@ -16,6 +22,10 @@ class MergeSort:
     }
 
     @staticmethod
+    @error_handler([])
+    @method_logger
+    @performance_monitor
+    @simple_cache(300)
     def sort_books(
         books: List[Book], criteria: str, ascending: bool = True
     ) -> List[Book]:

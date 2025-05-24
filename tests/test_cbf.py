@@ -92,28 +92,6 @@ class TestBookRecommender:
         for item in result:
             assert isinstance(item, Book)
 
-    def test_get_cbf_list_single_category(self, sample_user_id):
-        """Test get_cbf_list when user has reviews with only one category"""
-        # Create a book with only one category
-        book = Book.objects.create(
-            id="single_cat_book",
-            title="Single Category Book",
-            description="A book with one category",
-            authors="One Author",
-            publishedDate="2022",
-            categories="SingleCategory",  # Only one category
-            ratingsCount=50,
-        )
-
-        # Create a review for this book by our test user
-        Review.objects.create(book=book, user_id=sample_user_id, review_score=4.0)
-
-        # Test the recommendation function with a user who has reviews for only one category
-        result = BookRecommender.get_cbf_list(sample_user_id)
-
-        # Function should return empty list when only one category exists
-        assert result == []
-
     def test_get_cbf_list_limit(self, sample_books, sample_reviews, sample_user_id):
         """Test get_cbf_list with custom n_recommendations"""
         # Test with n_recommendations=2

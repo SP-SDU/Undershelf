@@ -1,11 +1,22 @@
 import numpy as np
 import pandas as pd
 
+from business_logic.aspects import (
+    error_handler,
+    input_validator,
+    performance_monitor,
+    simple_cache,
+    validate_positive_int,
+)
 from data_access.models import Book, Review
 
 
 class BookRecommender:
     @staticmethod
+    @error_handler([])
+    @input_validator(validate_positive_int)
+    @performance_monitor
+    @simple_cache(600)
     def get_cbf_list(userid, n_recommendations=10):
         # Build a DataFrame merging user reviews with their books
         user_reviews = Review.objects.filter(user_id=userid).select_related("book")

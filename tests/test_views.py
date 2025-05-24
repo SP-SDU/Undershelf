@@ -56,8 +56,10 @@ class TestViews:
         assert "Undershelf" in str(response.content)
         # Check if the correct template was used
         assert "index.html" in [t.name for t in response.templates]
-        # Check if 'top_books' is in the context (even if empty)
-        assert "top_books" in response.context
+        # Check for required context variables (k_value and title)
+        assert "k_value" in response.context
+        assert "title" in response.context
+        assert response.context["title"] == f"Top {response.context['k_value']} Books"
 
     def test_search_view(self, client, sample_book):
         """Test search view"""

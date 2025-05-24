@@ -150,3 +150,42 @@ LOGIN_URL = "login"
 
 # Email settings for password reset functionality
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # For development
+
+# Logging configuration for AOP aspects
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "aop_logs.log",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "business_logic.aspects": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "business_logic": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

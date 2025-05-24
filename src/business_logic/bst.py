@@ -1,3 +1,12 @@
+from business_logic.aspects import (
+    input_validator,
+    method_logger,
+    performance_monitor,
+    simple_cache,
+    validate_non_empty_string,
+)
+
+
 class BSTNode:
     def __init__(self, key, book):
         self.key = key
@@ -68,6 +77,10 @@ class BST:
             self._autocomplete(node.right, prefix, results, max_results)
 
     @classmethod
+    @input_validator(validate_non_empty_string)
+    @method_logger
+    @performance_monitor
+    @simple_cache(600)
     def search_in_books(cls, books, query):
         """Builds a BST from books and searches for the query."""
         bst = cls()

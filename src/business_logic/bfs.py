@@ -1,6 +1,14 @@
 from collections import defaultdict, deque
 from typing import List
 
+from business_logic.aspects import (
+    error_handler,
+    input_validator,
+    performance_monitor,
+    simple_cache,
+    validate_non_empty_string,
+    validate_positive_int,
+)
 from data_access.models import Book
 
 
@@ -11,6 +19,10 @@ class GraphRecommender:
     """
 
     @staticmethod
+    @error_handler([], propagate=[Book.DoesNotExist])
+    @input_validator(validate_positive_int, validate_non_empty_string)
+    @performance_monitor
+    @simple_cache(300)
     def get_recommendations(
         start_book_id: str, max_depth: int = 2, max_results: int = 10
     ) -> List[Book]:

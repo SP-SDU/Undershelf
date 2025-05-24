@@ -2,11 +2,22 @@ import heapq
 
 from django.db.models import Avg, ExpressionWrapper, F, FloatField
 
+from business_logic.aspects import (
+    input_validator,
+    method_logger,
+    performance_monitor,
+    simple_cache,
+    validate_positive_int,
+)
 from data_access.models import Book
 
 
 class BookRanker:
     @staticmethod
+    @input_validator(validate_positive_int)
+    @method_logger
+    @performance_monitor
+    @simple_cache(300)
     def get_top_k(k=10):
         # 1. Annotate books with calculated scores
         books = Book.objects.annotate(
