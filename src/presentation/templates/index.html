@@ -23,12 +23,13 @@
                     <button type="submit"
                         class="bg-blue-600 text-white px-6 py-3 rounded-r-md hover:bg-blue-700">Search</button>
                 </form>
-
+                {% if not user.is_authenticated %}
                 <div class="space-x-4">
                     <a href="{% url 'signup' %}" class="bg-blue-600 text-white px-6 py-2 rounded-md">Sign Up</a>
                     <a href="{% url 'login' %}"
                         class="border border-blue-600 text-blue-600 px-6 py-2 rounded-md">Login</a>
                 </div>
+                {% endif %}
             </div>
             <div class="relative">
                 <!-- Placeholder for Wave Design - could be an img or SVG background -->
