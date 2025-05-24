@@ -1,0 +1,30 @@
+{% for book in books %}
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <a href="{% url 'book_details' book_id=book.id %}">
+        {% if book.image %}
+        <img src="{{ book.image }}" alt="{{ book.title }}" class="w-full h-64 object-cover">
+        {% else %}
+        <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+            <span class="text-gray-500">No Image</span>
+        </div>
+        {% endif %}
+    </a>
+    <div class="p-4">
+        <h3 class="text-lg font-semibold mb-1">
+            <a href="{% url 'book_details' book_id=book.id %}" class="hover:text-blue-600" title="{{ book.title }}">{{ book.title }}</a>
+        </h3>
+        <p class="text-sm text-gray-600 truncate">{{ book.authors|default:"Unknown Author" }}</p>
+        <div class="flex items-center justify-between mt-2">
+            {% if book.rating %}
+            <div class="flex items-center">
+                <span class="text-yellow-400">★</span>
+                <span class="ml-1 text-sm text-gray-700">{{ book.rating|floatformat:1 }}</span>
+            </div>
+            {% else %}
+            <div></div>
+            {% endif %}
+            <div class="text-xs text-gray-500">Score: {{ book.score|floatformat:2 }}</div>
+        </div>
+    </div>
+</div>
+{% endfor %}

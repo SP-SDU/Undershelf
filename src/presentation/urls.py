@@ -7,6 +7,7 @@ urlpatterns = [
     path("search/", views.search, name="search"),
     path("book/<str:book_id>/", views.book_details, name="book_details"),
     path("autocomplete/", views.autocomplete, name="autocomplete"),
+    path("top-books/", views.top_books, name="top_books"),
     path("about/", views.about, name="about"),
     path("signup/", views.signup_view, name="signup"),
     path("profile/", views.profile_view, name="profile"),

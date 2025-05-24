@@ -4,6 +4,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.utils.cache import patch_cache_control, patch_vary_headers
 
 from business_logic.bst import BST
@@ -22,15 +23,22 @@ def cache_page(response):
 
 def index(request):
     k = int(request.GET.get("k", 10))  # Get k parameter, default to 10
-    top_books = BookRanker.get_top_k(k)  # Fetch top k books
 
     context = {
-        "top_books": top_books,
         "k_value": k,
         "title": f"Top {k} Books",
     }
 
     response = render(request, "index.html", context)
+    cache_page(response)
+    return response
+
+
+def top_books(request):
+    k = int(request.GET.get("k", 10))
+    top_books = BookRanker.get_top_k(k)
+    html = render_to_string("top_books.html", {"books": top_books}, request=request)
+    response = JsonResponse({"html": html})
     cache_page(response)
     return response
 
