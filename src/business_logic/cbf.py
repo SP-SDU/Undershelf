@@ -19,15 +19,10 @@ class BookRecommender:
     @simple_cache(600)
     def get_cbf_list(book_id, n_recommendations=10):
         book = Book.objects.filter(pk=book_id).first()
-        if not book:
+        review = book.reviews.first() if book else None
+        if not review:
             return []
-
-        review = book.reviews.first()
-        userid = review.user_id if review else None
-        if not userid:
-            return []
-
-        return BookRecommender._get_cbf_list(userid, n_recommendations)
+        return BookRecommender._get_cbf_list(review.user_id, n_recommendations)
 
     @staticmethod
     def _get_cbf_list(userid, n_recommendations=10):
