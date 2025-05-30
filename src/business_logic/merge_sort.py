@@ -53,7 +53,7 @@ class MergeSort:
                 value = getattr(book, field, "")
                 key_values.append(value.lower() if isinstance(value, str) else value)
 
-        # Convert to numpy array and sort
+        # Merge via index-based stable sort
         key_values = np.array(key_values)
         sorted_indices = np.argsort(key_values, kind="mergesort")
 

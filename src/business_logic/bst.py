@@ -60,22 +60,6 @@ class BST:
         self._search(node.left, query, results)
         self._search(node.right, query, results)
 
-    def autocomplete(self, prefix, max_results=10):
-        results = []
-        self._autocomplete(self.root, prefix.lower(), results, max_results)
-        return results
-
-    def _autocomplete(self, node, prefix, results, max_results):
-        if node is None or len(results) >= max_results:
-            return
-        node_key_str = str(node.key).lower()
-        if node_key_str.startswith(prefix):
-            results.append(node.book)
-        if prefix <= node_key_str:
-            self._autocomplete(node.left, prefix, results, max_results)
-        if prefix >= node_key_str:
-            self._autocomplete(node.right, prefix, results, max_results)
-
     @classmethod
     @input_validator(validate_non_empty_string)
     @method_logger
