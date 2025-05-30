@@ -113,10 +113,8 @@ def autocomplete(request):
 def book_details(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     reviews = book.reviews.all()
-    review = book.reviews.first()
-    userid = review.user_id if review else None
 
-    recommended_books = BookRecommender.get_cbf_list(userid, n_recommendations=8)
+    recommended_books = BookRecommender.get_cbf_list(book_id, n_recommendations=8)
 
     response = render(
         request,

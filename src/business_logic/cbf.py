@@ -17,7 +17,20 @@ class BookRecommender:
     @input_validator(validate_positive_int)
     @performance_monitor
     @simple_cache(600)
-    def get_cbf_list(userid, n_recommendations=10):
+    def get_cbf_list(book_id, n_recommendations=10):
+        book = Book.objects.filter(pk=book_id).first()
+        if not book:
+            return []
+
+        review = book.reviews.first()
+        userid = review.user_id if review else None
+        if not userid:
+            return []
+
+        return BookRecommender._get_cbf_list(userid, n_recommendations)
+
+    @staticmethod
+    def _get_cbf_list(userid, n_recommendations=10):
         # Build a DataFrame merging user reviews with their books
         user_reviews = Review.objects.filter(user_id=userid).select_related("book")
         if not user_reviews:
