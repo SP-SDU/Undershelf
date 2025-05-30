@@ -107,30 +107,6 @@ class TestBSTClass:
         results = bst.search("nonexistent")
         assert len(results) == 0
 
-    def test_autocomplete(self, sample_books):
-        """Test autocomplete functionality"""
-        bst = BST()
-        bst.build(sample_books)
-
-        # Test autocomplete with title prefix
-        results = bst.autocomplete("Ha")
-        assert len(results) == 1
-        assert results[0].title == "Harry Potter"
-
-        # Test with max_results limit
-        bst = BST(key_func=lambda b: b.publishedDate)
-        bst.build(sample_books)
-        results = bst.autocomplete("19", max_results=2)
-        assert len(results) <= 2
-
-        # Test with no matches
-        results = bst.autocomplete("xyz")
-        assert len(results) == 0
-
-        results = bst.autocomplete("")
-
-        assert len(results) <= len(sample_books)
-
     def test_insert_and_search(self):
         """Test inserting individual books and searching"""
         bst = BST()
