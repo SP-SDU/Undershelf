@@ -18,10 +18,10 @@ Container_Boundary(undershelf, "Undershelf System") {
   }
 
   Container_Boundary(business_logic_layer, "Business Logic Layer") {
-    Component(search,     "Search Module",         "Python", "Takes query, returns matching books")
-    Component(sort,       "Sorting Module",        "Python", "Takes book list, returns sorted list")
-    Component(rank,       "Ranking Module",        "Python", "Takes book list, returns top-K list")
-    Component(recommend,  "Recommendation Module", "Python", "Takes book list, returns related suggestions")
+    Component(search,     "Search Component",         "Python", "Takes query, returns matching books")
+    Component(sort,       "Sorting Component",        "Python", "Takes book list, returns sorted list")
+    Component(rank,       "Ranking Component",        "Python", "Takes book list, returns top-K list")
+    Component(recommend,  "Recommendation Component", "Python", "Takes book list, returns related suggestions")
   }
 
   Container_Boundary(data_access_layer, "Data Access Layer") {
@@ -45,7 +45,7 @@ Rel(views,     recommend,   "Calls")
 Rel(views,     templates,   "Renders")
 
 ' Data Access
-Rel(search,    prep,       "Reads/Cleans")
+Rel(search,    model,      "Reads from")
 Rel(sort,      model,      "Reads from")
 Rel(rank,      model,      "Reads from")
 Rel(recommend, model,      "Reads from")
