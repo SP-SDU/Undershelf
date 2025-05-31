@@ -1,0 +1,80 @@
+@startuml Use Case Diagram
+left to right direction
+
+' Actors
+actor "User/Reader" as user
+actor "Admin" as admin
+
+' System boundary
+rectangle "Undershelf" {
+
+  ' Authentication & User Management
+  package "Authentication" {
+    usecase "Sign Up" as UC1
+    usecase "Log In" as UC2
+    usecase "Log Out" as UC3
+    usecase "Reset Password" as UC4
+    usecase "Manage Profile" as UC5
+    usecase "Change Password" as UC6
+    usecase "Delete Account" as UC7
+  }
+
+  ' Book Discovery & Interaction
+  package "Book Interaction" {
+    usecase "Search Books" as UC8
+    usecase "Get Autocomplete Suggestions" as UC9
+    usecase "Browse Top-K Books" as UC10
+    usecase "View Book Details" as UC11
+    usecase "Sort Search Results" as UC12
+    usecase "Filter Search Results" as UC13
+    usecase "Switch View Mode" as UC14
+    usecase "View Reviews" as UC18
+    usecase "View Recommendations" as UC19
+  }
+
+  ' Admin Functions
+  package "Administration" {
+    usecase "Access Admin Panel" as UC20
+    usecase "Manage Book Data" as UC21
+    usecase "Import Data from CSV" as UC22
+    usecase "Create Superuser" as UC23
+    usecase "View System Statistics" as UC24
+    usecase "Manage User Accounts" as UC25
+  }
+}
+
+' User/Reader relationships
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC4
+user --> UC5
+user --> UC6
+user --> UC7
+user --> UC8
+user --> UC9
+user --> UC10
+user --> UC11
+user --> UC12
+user --> UC13
+user --> UC14
+user --> UC18
+user --> UC19
+
+' Admin relationships
+admin --> UC20
+admin --> UC21
+admin --> UC22
+admin --> UC23
+admin --> UC24
+admin --> UC25
+
+' Inheritance (Admin is a User)
+admin --|> user
+
+' Extend / Include relationships
+UC8 ..> UC9 : <<extend>>
+UC11 ..> UC18 : <<include>>
+UC11 ..> UC19 : <<include>>
+
+@enduml

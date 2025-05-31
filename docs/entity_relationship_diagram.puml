@@ -1,0 +1,48 @@
+@startuml Entity Relationship Diagram
+
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "User" as e01 {
+  *id : number <<generated>>
+  --
+  *username : varchar(150)
+  *first_name : varchar(150)
+  *last_name : varchar(150)
+  *email : varchar(254)
+  *password : varchar(128)
+  *is_staff : boolean
+  *is_active : boolean
+  *is_superuser : boolean
+  *date_joined : datetime
+  *last_login : datetime
+}
+
+entity "Book" as e02 {
+  *id : varchar(255) <<PK>>
+  --
+  *title : varchar(255)
+  description : text
+  authors : varchar(255)
+  image : url
+  publisher : varchar(255)
+  publishedDate : varchar(50)
+  categories : varchar(255)
+  ratingsCount : float
+}
+
+entity "Review" as e03 {
+  *review_id : number <<generated>>
+  --
+  *book : varchar(255) <<FK>>
+  user_id : varchar(255)
+  review_score : float
+}
+
+' Relationships
+e02 ||--o{ e03 : has
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml User Journey Diagram
+start
+:Visit Home Page;
+:View Top-Rated Books;
+fork
+  :Search for Books;
+  :View Search Results;
+fork again
+  :Browse Categories;
+  :Filter Book List;
+end fork
+:Select Book;
+:View Book Details;
+fork
+  :View Related Books;
+  :Select New Book;
+fork again
+  :Return to Home;
+end fork
+stop
+@enduml
